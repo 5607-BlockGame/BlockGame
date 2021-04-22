@@ -55,7 +55,7 @@ private:
     }
 
     std::optional<Chunk> GetChunkOnDisk(ChunkCoord coord) {
-        // TODO
+        return Chunk::ReadFromFile(coord);
     }
 
     Generator &generator;

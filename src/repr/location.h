@@ -14,7 +14,7 @@ struct Vec3D {
 
 template <class T>
 struct Vec2D {
-    T x,y,z;
+    T x,y;
 };
 
 typedef Vec2D<int> ChunkCoord;

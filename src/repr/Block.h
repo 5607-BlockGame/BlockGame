@@ -14,5 +14,7 @@ struct Block {
     char data = 0;
 
     Block(BlockType type);
+
+    Block(BlockType type, char data);
 };
 

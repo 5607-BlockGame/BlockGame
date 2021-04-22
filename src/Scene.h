@@ -1,6 +1,6 @@
 #pragma once
 
-#include <repr/Map.h>
+#include <repr/World.h>
 
 #include <utility>
 #include <unordered_set>
@@ -49,7 +49,7 @@ public:
 
         for (int x = 0; x < map.width; ++x) {
             for (int y = 0; y < map.height; ++y) {
-                auto element = map.GetElement(x, y);
+                auto element = map.GetBlock(x, y);
                 if (element.tag == Tag::KEY) {
                     glm::vec3 location(x, y, -.25);
                     SceneKey key = {
@@ -72,7 +72,7 @@ public:
 
         for (int x = 0; x < map.width; ++x) {
             for (int y = 0; y < map.height; ++y) {
-                auto element = map.GetElement(x, y);
+                auto element = map.GetBlock(x, y);
                 if (element.tag == Tag::START) {
                     glm::vec3 res(x, y, 0.0);
                     return res;
@@ -102,7 +102,7 @@ public:
         int iX = (int) std::round(x);
         int iY = (int) std::round(y);
 
-        Element element = map.GetElement(iX, iY);
+        Element element = map.GetBlock(iX, iY);
 
         switch (element.tag) {
             case Tag::KEY:
@@ -126,7 +126,7 @@ public:
     void Draw() {
         for (int x = 0; x < map.width; ++x) {
             for (int y = 0; y < map.height; ++y) {
-                auto element = map.GetElement(x, y);
+                auto element = map.GetBlock(x, y);
 
                 auto fx = (float) x;
                 auto fy = (float) y;

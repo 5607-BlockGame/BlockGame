@@ -28,7 +28,6 @@ using namespace std;
 
 const float FOV_Y = 3.14f / 4;
 const float STRAFE_SPEED = 0.07;
-const float LOOK_SPEED = 0.03;
 const float ZNEAR = 0.01;
 const float ZFAR = 10.0;
 const float EXTRA_FACTOR = 3.0f;

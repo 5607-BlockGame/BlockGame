@@ -2,7 +2,7 @@
 
 
 #include <string>
-#include <repr/Map.h>
+#include <repr/World.h>
 #include <fstream>
 
 namespace MapParser {

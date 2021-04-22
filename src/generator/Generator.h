@@ -1,7 +1,7 @@
 #pragma once
 
-#include "location.h"
-#include "Chunk.h"
+#include "repr/location.h"
+#include "repr/Chunk.h"
 
 class Generator {
 public:

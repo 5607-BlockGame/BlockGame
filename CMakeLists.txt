@@ -21,7 +21,7 @@ include_directories(lib/glm/simd)
 add_subdirectory(lib/glad)
 add_subdirectory(lib/glm)
 
-set(SOURCES src/main.cpp src/parse/MapParser.cpp src/parse/MapParser.h src/repr/World.cpp src/repr/World.h src/Scene.cpp src/Scene.h src/State.cpp src/State.h src/utils.cpp src/utils.h src/repr/Generator.cpp src/repr/Generator.h src/repr/location.h src/repr/Chunk.cpp src/repr/Chunk.h src/repr/Block.cpp src/repr/Block.h)
+set(SOURCES src/main.cpp src/repr/World.cpp src/repr/World.h src/Scene.cpp src/Scene.h src/State.cpp src/State.h src/utils.cpp src/utils.h src/generator/Generator.h src/repr/location.h src/repr/Chunk.cpp src/repr/Chunk.h src/repr/Block.cpp src/repr/Block.h src/generator/SimpleGenerator.cpp src/generator/SimpleGenerator.h)
 
 add_executable(BlockGame ${SOURCES})
 

@@ -55,7 +55,7 @@ public:
                     SceneKey key = {
                             .originX = x,
                             .originY = y,
-                            .id = element.value.key.id,
+                            .id = element.value.key.type,
                             .location = location
                     };
                     keys.push_back(key);
@@ -141,7 +141,7 @@ public:
                         // no special drawing
                         break;
                     case Tag::DOOR:
-                        Draw(fx, fy, 0.0f, textures.doorModel, (float) element.value.door.id / 5.0f, 0.0f, 0.0f);
+                        Draw(fx, fy, 0.0f, textures.doorModel, (float) element.value.door.type / 5.0f, 0.0f, 0.0f);
                         break;
                     case Tag::WALL:
                         Draw(fx, fy, 0.0f, textures.wallModel);
@@ -168,7 +168,7 @@ private:
      */
     bool HandleDoor(const Door &door, int iX, int iY) {
         for (const auto &grabbedKey : grabbedKeys) {
-            if (door.id == grabbedKey->id) {
+            if (door.type == grabbedKey->id) {
 
                 // the grabbed grabbedKey disappears
                 grabbedKeys.erase(grabbedKey);

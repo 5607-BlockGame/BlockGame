@@ -7,6 +7,8 @@
 template <class T>
 struct Vec3D {
     T x, y, z;
+
+    Vec3D(T x, T y, T z) : x(x), y(y), z(z) {}
 };
 
 

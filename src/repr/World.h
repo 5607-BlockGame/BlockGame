@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include "location.h"
 #include "Chunk.h"
-#include "Generator.h"
+#include "generator/Generator.h"
 
 
 struct PlayerData {

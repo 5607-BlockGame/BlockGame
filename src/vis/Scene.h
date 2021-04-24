@@ -17,7 +17,7 @@ struct TexturedModel {
 TexturedModel::TexturedModel(Model &model, unsigned int textureId) : model(model), textureId(textureId) {}
 
 const int SEE_Y = 16;
-const int CHUNK_VIEW_DIST = 1;
+const int CHUNK_VIEW_DIST = 0;
 
 class Scene {
 private:
@@ -55,6 +55,8 @@ public:
 
         BlockLocation blockLocation(iX, iY, iZ);
 
+        if(iY < 0 || iY >= CHUNK_HEIGHT) return false;
+
         Block block = world.getBlockAt(blockLocation);
 
         return !block.IsPassthrough();
@@ -63,40 +65,39 @@ public:
 
 
     void Draw(PlayerLoc loc) {
-        TexturedModel model(blockModel, 0);
-        Draw(0,0,0, model);
-//        ChunkCoord baseChunkCoord = Chunk::Location(loc);
-//
-//        int baseY = (int) loc.y;
-//
-//        int minY = Chunk::BoundY(baseY - SEE_Y);
-//        int maxY = Chunk::BoundY(baseY + SEE_Y);
-//
-//        for (int chunkDX = -CHUNK_VIEW_DIST; chunkDX <= CHUNK_VIEW_DIST; ++chunkDX) {
-//            for (int chunkDY = -CHUNK_VIEW_DIST; chunkDY <= CHUNK_VIEW_DIST; ++chunkDY) {
-//                int chunkX = baseChunkCoord.x + chunkDX;
-//                int chunkY = baseChunkCoord.y + chunkDY;
-//
-//                ChunkCoord chunkCoord(chunkX, chunkY);
-//                Chunk *chunk = world.GetChunk(chunkCoord);
-//
-//                for (int y = minY; y <= maxY; ++y) {
-//                    for (int x = 0; x < CHUNK_WIDTH; ++x) { // TODO: is iteration in right order?
-//                        for (int z = 0; z < CHUNK_WIDTH; ++z) {
-//                            BlockLocation blockLocation(x, y, z);
-//                            Block &block = chunk->GetBlock(blockLocation);
-//                            auto blockId = static_cast<unsigned int>(block.type);
-//                            TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
-//
-//                            double actualX = loc.x + (double) chunkDX * CHUNK_WIDTH + x;
-//                            double actualZ = loc.z + (double) chunkDY * CHUNK_WIDTH + z;
-//                            auto actualY = (double) y;
-//                            Draw(actualX, actualY, actualZ, texturedModel);
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        ChunkCoord baseChunkCoord = Chunk::Location(loc);
+
+        int baseY = (int) loc.y;
+
+        int minY = Chunk::BoundY(baseY - SEE_Y);
+        int maxY = Chunk::BoundY(baseY + SEE_Y);
+
+        for (int chunkDX = -CHUNK_VIEW_DIST; chunkDX <= CHUNK_VIEW_DIST; ++chunkDX) {
+            for (int chunkDY = -CHUNK_VIEW_DIST; chunkDY <= CHUNK_VIEW_DIST; ++chunkDY) {
+                int chunkX = baseChunkCoord.x + chunkDX;
+                int chunkY = baseChunkCoord.y + chunkDY;
+
+                ChunkCoord chunkCoord(chunkX, chunkY);
+                Chunk *chunk = world.GetChunk(chunkCoord);
+
+                for (int z = minY; z <= maxY; ++z) {
+                    for (int x = 0; x < CHUNK_WIDTH; ++x) { // TODO: is iteration in right order?
+                        for (int y = 0; y < CHUNK_WIDTH; ++y) {
+                            BlockLocation blockLocation(x, y, z);
+                            Block &block = chunk->GetBlock(blockLocation);
+                            if(block.type == BlockType::AIR) continue; // we do not draw air
+                            auto blockId = static_cast<unsigned int>(block.type);
+                            TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
+
+                            double actualX = loc.x + (double) chunkDX * CHUNK_WIDTH + x;
+                            double actualZ = loc.z + (double) chunkDY * CHUNK_WIDTH + z;
+                            auto actualY = (double) y;
+                            Draw(actualX, actualY, actualZ, texturedModel);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 private:

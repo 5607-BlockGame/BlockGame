@@ -220,25 +220,30 @@ int main(int argc, char *argv[]) {
         }
 
 
-        auto &movement = state.movement;
+        auto& movement = state.movement;
         float dX = -STRAFE_SPEED * cos(state.angle) * movement.forwardStrafe + STRAFE_SPEED * sin(state.angle) * movement.sideStrafe;
         float dY = STRAFE_SPEED * sin(state.angle) * movement.forwardStrafe + STRAFE_SPEED * cos(state.angle) * movement.sideStrafe;
-        Vec3 moveDir(dX, dY, 0.0f);
-        Vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
+        glm::vec3 moveDir(dX, dY, 0.0f);
+        glm::vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
 
-        Vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
-        Vec3 dKey(-KEY_DIST * cos(state.angle), KEY_DIST * sin(state.angle), KEY_HEIGHT);
+        glm::vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
+        glm::vec3 dKey(-KEY_DIST * cos(state.angle), KEY_DIST * sin(state.angle), KEY_HEIGHT);
 
         auto oldPosition = state.camPosition;
 
-        Vec3 extraPosition = state.camPosition + dirExtra;
-        state.camPosition = state.camPosition + moveDir;
+        glm::vec3 extraPosition = state.camPosition + dirExtra;
+        state.camPosition += moveDir;
 
         if (dX != 0.0 || dY != 0.0) {
 
-            PlayerLoc loc(extraPosition); // TODO: is this right? axis were flipper
+            float x = extraPosition[0];
+            float y = extraPosition[1];
+            float z = extraPosition[2];
+
+            PlayerLoc loc(x,y,z);
 
             if (scene.IsCollision(loc)) {
+                printf("collision\n");
                 state.camPosition = oldPosition;
             }
         }

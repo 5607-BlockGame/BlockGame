@@ -16,9 +16,11 @@ struct PlayerData {
 
 class World {
 private:
+    Generator &generator;
     std::vector<PlayerData> playerData;
     std::unordered_map<ChunkCoord, Chunk> chunksInMemory;
 public:
+    Vec3D<double> spawnPoint = Vec3D<double>(0.0, 0.0, 25.0);
 
     World(Generator &generator) : generator(generator) {}
 
@@ -38,16 +40,17 @@ public:
         return AddChunkToMemory(generatedChunk, coord);
     }
 
-    Block& getBlockAt(BlockLocation location){
+    Block &getBlockAt(BlockLocation location) {
         ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
-        Chunk* chunk = GetChunk(chunkCoord);
+        Chunk *chunk = GetChunk(chunkCoord);
 
-        Vec3D<size_t> blockLocation(location.x % 16, location.y, location.z % 16);
+        Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
+
+        if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
+        if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
 
         return chunk->GetBlock(blockLocation);
     }
-
-    Vec3D<double> spawnPoint = Vec3D<double>(0.0,0.0,0.0);
 
 
 private:
@@ -72,5 +75,4 @@ private:
         return Chunk::ReadFromFile(coord);
     }
 
-    Generator &generator;
 };

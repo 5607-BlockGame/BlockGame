@@ -11,7 +11,7 @@
 
 const size_t CHUNK_WIDTH = 16;
 const size_t CHUNK_SLICE = CHUNK_WIDTH * CHUNK_WIDTH;
-const size_t CHUNK_HEIGHT = 65536; // super large height that probably won't work
+const size_t CHUNK_HEIGHT = 256; // super large height that probably won't work
 const size_t CHUNK_SIZE = CHUNK_HEIGHT * CHUNK_SLICE;
 const Block EMPTY_BLOCK(BlockType::AIR);
 
@@ -78,23 +78,21 @@ struct Chunk {
 
     Block &GetBlock(Vec3D<size_t> location) {
         assert(location.x >= 0);
-        assert(location.z >= 0);
+        assert(location.y >= 0);
         assert(location.x < CHUNK_WIDTH);
-        assert(location.z < CHUNK_WIDTH);
+        assert(location.y < CHUNK_WIDTH);
+        assert(location.z >= 0);
+        assert(location.z < CHUNK_HEIGHT);
 
-        if (location.y < 0 || location.y >= CHUNK_HEIGHT) {
-            return const_cast<Block &>(EMPTY_BLOCK); // TODO: this is jank
-        }
-
-
-        const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.z;
+        // 15 + 16(15)
+        const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.x;
         assert(idx < CHUNK_SIZE);
         return elements[idx];
     }
 
 private:
     static std::string FileName(ChunkCoord coord) {
-        auto format = boost::format("{}-{}.chunk") % coord.x % coord.y;
+        auto format = boost::format("%1%-%2%.chunk") % coord.x % coord.y;
         return format.str();
     }
 

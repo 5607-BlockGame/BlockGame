@@ -5,8 +5,8 @@
 #include "glad.h"  //Include order can matter here
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <vec3.hpp>
-#include <type_ptr.hpp>
+//#include <vec3.hpp>
+//#include <type_ptr.hpp>
 #include <ostream>
 #include <iostream>
 

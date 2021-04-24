@@ -3,7 +3,7 @@
 
 #include "Generator.h"
 
-class SimpleGenerator: Generator {
+class SimpleGenerator: public Generator {
     Chunk Generate(ChunkCoord coord) override;
 };
 

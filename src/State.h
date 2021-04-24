@@ -1,6 +1,7 @@
 #pragma once
 
-#include <vec3.hpp>
+#include <repr/location.h>
+#include <glm/vec3.hpp>
 
 enum class Look {
     NONE,
@@ -30,18 +31,13 @@ struct Movement {
 struct State {
     bool quit = false;
     bool fullscreen = false;
-    glm::vec3 camPosition;
+    Vec3 camPosition;
     float angle;
     float angle2;
     Movement movement;
 
-
     [[nodiscard]] inline bool isRunning() const{
         return !quit;
-    }
-
-    inline bool onGround(){
-        return camPosition[2] == 0.0f;
     }
 };
 

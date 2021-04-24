@@ -15,7 +15,13 @@ struct PlayerData {
 
 
 class World {
+private:
+    std::vector<PlayerData> playerData;
+    std::unordered_map<ChunkCoord, Chunk> chunksInMemory;
 public:
+
+    World(Generator &generator) : generator(generator) {}
+
     Chunk *GetChunk(ChunkCoord coord) {
         // try memory first
         auto *chunkInMem = GetChunkInMemory(coord);
@@ -32,11 +38,19 @@ public:
         return AddChunkToMemory(generatedChunk, coord);
     }
 
+    Block& getBlockAt(BlockLocation location){
+        ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
+        Chunk* chunk = GetChunk(chunkCoord);
+
+        Vec3D<size_t> blockLocation(location.x % 16, location.y, location.z % 16);
+
+        return chunk->GetBlock(blockLocation);
+    }
+
+    Vec3D<double> spawnPoint = Vec3D<double>(0.0,0.0,0.0);
+
 
 private:
-    std::vector<PlayerData> playerData;
-    std::unordered_map<ChunkCoord, Chunk> chunksInMemory;
-
     Chunk *GetChunkInMemory(ChunkCoord coord) {
         auto itr = chunksInMemory.find(coord);
 

@@ -1,8 +1,9 @@
 #include "glad.h"  //Include order can matter here
 #include <SDL.h>
-#include <SDL_opengl.h>
 #include <cstdio>
-#include <iostream>
+#include <generator/SimpleGenerator.h>
+#include <glm/fwd.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Shader macro
 #define GLSL(src) "#version 150 core\n" #src
@@ -14,14 +15,13 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
+//#include "gtc/matrix_transform.hpp"
+//#include "gtc/type_ptr.hpp"
+
 
 #include "utils.h"
 #include "State.h"
-#include "Scene.h"
-#include "parse/MapParser.h"
+#include "vis/Scene.h"
 
 using namespace std;
 
@@ -82,9 +82,9 @@ void handleKeyHold(State &state, int code) {
             break;
         case SDLK_SPACE:
             // if on ground
-            if (state.camPosition[2] == 0.0) {
-                state.movement.velocityY = JUMP_VEL;
-            }
+//            if (state.camPosition[2] == 0.0) { TODO: re-implement
+//                state.movement.velocityY = JUMP_VEL;
+//            }
             break;
         default:
             break;
@@ -101,13 +101,11 @@ float avg_render_time = 0;
 
 int main(int argc, char *argv[]) {
 
-    Map map = MapParser::parseMap("maps/test.txt");
 
     Utils::SDLInit();
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    //Create brickCube window (offsetx, offsety, width, height, flags)
     SDL_Window *window = SDL_CreateWindow(window_title, 100, 100, screen_width, screen_height, SDL_WINDOW_OPENGL);
 
     SDL_SetWindowGrab(window, SDL_TRUE);
@@ -126,12 +124,9 @@ int main(int argc, char *argv[]) {
     const auto BRICK_TEXTURE_ID = 1;
 
     Model cubeModel = Utils::loadModel("models/cube.txt");
-    Model knotModel = Utils::loadModel("models/knot.txt");
-    Model teapotModel = Utils::loadModel("models/teapot.txt");
-
 
     // combine into one array and change pointers of other models
-    Model combined = Model::combine({&cubeModel, &knotModel, &teapotModel});
+    Model combined = Model::combine({&cubeModel});
 
     //Build brickCube Vertex Array Object (VAO) to store mapping of shader attributse to VBO
     GLuint vao;
@@ -169,25 +164,11 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_DEPTH_TEST);
 
-    TexturedModel brickCube = {
-            .model = cubeModel,
-            .textureId = BRICK_TEXTURE_ID,
-    };
+    SimpleGenerator generator;
 
-    TexturedModel woodCube = {
-            .model = cubeModel,
-            .textureId = WOOD_TEXTURE_ID,
-    };
+    World world(generator);
 
-    TextureData texturedData = {
-            .wallModel = brickCube,
-            .keyModel = knotModel,
-            .floorModel = woodCube,
-            .endModel= teapotModel,
-            .doorModel = cubeModel,
-    };
-
-    Scene scene(texturedData, map, texturedShader);
+    Scene scene(world, texturedShader, cubeModel);
 
 
     State state{
@@ -207,14 +188,14 @@ int main(int argc, char *argv[]) {
         unsigned int millisPast = t_start - t_prev;
         float secondsPast = millisPast / 1000.F;
 
-        if (!state.onGround() || state.movement.velocityY != 0.0f) {
-            state.camPosition[2] += state.movement.velocityY;
-            if (state.camPosition[2] < 0.0f) { // so we always hit ground
-                state.camPosition[2] = 0.0f;
-            }
-
-            state.movement.velocityY -= ACC_G * secondsPast;
-        }
+//        if (!state.onGround() || state.movement.velocityY != 0.0f) {
+//            state.camPosition[2] += state.movement.velocityY;
+//            if (state.camPosition[2] < 0.0f) { // so we always hit ground
+//                state.camPosition[2] = 0.0f;
+//            }
+//
+//            state.movement.velocityY -= ACC_G * secondsPast;
+//        }
 
         // reset movement
         state.movement.sideStrafe = 0.0;
@@ -239,32 +220,30 @@ int main(int argc, char *argv[]) {
         }
 
 
-        auto& movement = state.movement;
+        auto &movement = state.movement;
         float dX = -STRAFE_SPEED * cos(state.angle) * movement.forwardStrafe + STRAFE_SPEED * sin(state.angle) * movement.sideStrafe;
         float dY = STRAFE_SPEED * sin(state.angle) * movement.forwardStrafe + STRAFE_SPEED * cos(state.angle) * movement.sideStrafe;
-        glm::vec3 moveDir(dX, dY, 0.0f);
-        glm::vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
+        Vec3 moveDir(dX, dY, 0.0f);
+        Vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
 
-        glm::vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
-        glm::vec3 dKey(-KEY_DIST * cos(state.angle), KEY_DIST * sin(state.angle), KEY_HEIGHT);
+        Vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
+        Vec3 dKey(-KEY_DIST * cos(state.angle), KEY_DIST * sin(state.angle), KEY_HEIGHT);
 
         auto oldPosition = state.camPosition;
 
-        glm::vec3 extraPosition = state.camPosition + dirExtra;
-        state.camPosition += moveDir;
+        Vec3 extraPosition = state.camPosition + dirExtra;
+        state.camPosition = state.camPosition + moveDir;
 
         if (dX != 0.0 || dY != 0.0) {
 
-            float x = extraPosition[0];
-            float y = extraPosition[1];
+            PlayerLoc loc(extraPosition); // TODO: is this right? axis were flipper
 
-            if (scene.IsCollision(x, y)) {
+            if (scene.IsCollision(loc)) {
                 state.camPosition = oldPosition;
             }
         }
 
-        auto keyPosition = state.camPosition + dKey;
-        scene.UpdateGrabbedKeys(keyPosition, state.angle);
+//        auto keyPosition = state.camPosition + dKey;
 
         // Clear the screen to default color
         glClearColor(.2f, 0.4f, 0.8f, 1.0f);
@@ -286,11 +265,11 @@ int main(int argc, char *argv[]) {
         GLint modelLoc = glGetUniformLocation(texturedShader, "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        glm::vec3 center = state.camPosition + lookDir;
-        glm::vec3 up(0.0f, 0.0f, 1.0f);
+        Vec3 center = state.camPosition + lookDir;
+        Vec3 up(0.0f, 0.0f, 1.0f);
 
         // set view matrix
-        glm::mat4 view = glm::lookAt(state.camPosition, center, up);
+        glm::mat4 view = glm::lookAt(to_glm(state.camPosition), to_glm(center), to_glm(up));
 
         GLint uniView = glGetUniformLocation(texturedShader, "view");
         glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
@@ -302,7 +281,7 @@ int main(int argc, char *argv[]) {
 
         glBindVertexArray(vao);
 
-        scene.Draw();
+        scene.Draw(state.camPosition);
 
         SDL_GL_SwapWindow(window); //Double buffering
 

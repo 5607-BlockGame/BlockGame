@@ -13,10 +13,28 @@ const size_t CHUNK_WIDTH = 16;
 const size_t CHUNK_SLICE = CHUNK_WIDTH * CHUNK_WIDTH;
 const size_t CHUNK_HEIGHT = 65536; // super large height that probably won't work
 const size_t CHUNK_SIZE = CHUNK_HEIGHT * CHUNK_SLICE;
+const Block EMPTY_BLOCK(BlockType::AIR);
 
 struct Chunk {
 
-    Chunk();
+
+    std::array<Block, CHUNK_SIZE> elements;
+
+    Chunk(){
+        elements = std::array<Block, CHUNK_SIZE>();
+    }
+
+    static ChunkCoord Location(PlayerLoc loc) {
+        const long x = (long) round(loc.x);
+        const long z = (long) round(loc.z);
+        return {(int) x >> 4, (int) z >> 4};
+    }
+
+    static int BoundY(int y) {
+        if (y < 0) return 0;
+        if (y >= CHUNK_HEIGHT) return CHUNK_HEIGHT - 1;
+        return y;
+    }
 
     static std::optional<Chunk> ReadFromFile(ChunkCoord coord) {
         auto is = GetFileIn(coord);
@@ -48,8 +66,6 @@ struct Chunk {
         os.close();
     }
 
-    std::array<Block, CHUNK_SIZE> elements;
-
     [[nodiscard]] Block GetBlock(Vec3D<size_t> location) const {
         const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.z;
         assert(idx < CHUNK_SIZE);
@@ -61,6 +77,16 @@ struct Chunk {
     };
 
     Block &GetBlock(Vec3D<size_t> location) {
+        assert(location.x >= 0);
+        assert(location.z >= 0);
+        assert(location.x < CHUNK_WIDTH);
+        assert(location.z < CHUNK_WIDTH);
+
+        if (location.y < 0 || location.y >= CHUNK_HEIGHT) {
+            return const_cast<Block &>(EMPTY_BLOCK); // TODO: this is jank
+        }
+
+
         const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.z;
         assert(idx < CHUNK_SIZE);
         return elements[idx];

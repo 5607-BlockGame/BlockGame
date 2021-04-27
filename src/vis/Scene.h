@@ -101,13 +101,11 @@ public:
     }
 
     // https://stackoverflow.com/questions/56229367/opengl-make-object-stick-to-camera
-    void DrawPlayer(PlayerLoc loc, glm::vec3 forward, float rotation, glm::mat4 view) {
-        glm::vec3 up(0.0,0.0,1.0);
-        glm::vec3 right = glm::normalize(glm::cross(up, forward));
+    void DrawPlayer(float handRotation, glm::mat4 view) {
         double handX =  0.05f;
         double handY = -0.01f;
         double handZ = -0.05f;
-        DrawHand(handX, handY, handZ, rotation, view);
+        DrawHand(handX, handY, handZ, handRotation, view);
     }
 
 

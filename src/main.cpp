@@ -302,7 +302,7 @@ int main(int argc, char *argv[]) {
         glBindVertexArray(vao);
 
         scene.Draw(state.camPosition);
-        scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
+        scene.DrawPlayer(state.handRotation, view);
 
         SDL_GL_SwapWindow(window); //Double buffering
 

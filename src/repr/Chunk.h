@@ -26,14 +26,14 @@ struct Chunk {
 
     static ChunkCoord Location(PlayerLoc loc) {
         const long x = (long) round(loc.x);
-        const long z = (long) round(loc.z);
-        return {(int) x >> 4, (int) z >> 4};
+        const long y = (long) round(loc.y);
+        return {(int) x >> 4, (int) y >> 4};
     }
 
-    static int BoundY(int y) {
-        if (y < 0) return 0;
-        if (y >= CHUNK_HEIGHT) return CHUNK_HEIGHT - 1;
-        return y;
+    static int BoundZ(int z) {
+        if (z < 0) return 0;
+        if (z >= CHUNK_HEIGHT) return CHUNK_HEIGHT - 1;
+        return z;
     }
 
     static std::optional<Chunk> ReadFromFile(ChunkCoord coord) {

@@ -220,35 +220,25 @@ int main(int argc, char *argv[]) {
         }
 
 
-        auto& movement = state.movement;
+        auto &movement = state.movement;
         float dX = -STRAFE_SPEED * cos(state.angle) * movement.forwardStrafe + STRAFE_SPEED * sin(state.angle) * movement.sideStrafe;
         float dY = STRAFE_SPEED * sin(state.angle) * movement.forwardStrafe + STRAFE_SPEED * cos(state.angle) * movement.sideStrafe;
-        glm::vec3 moveDir(dX, dY, 0.0f);
-        glm::vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
 
-        glm::vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
-        glm::vec3 dKey(-KEY_DIST * cos(state.angle), KEY_DIST * sin(state.angle), KEY_HEIGHT);
+        Vec3 moveDir(dX, dY, 0.0f);
+        Vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
+        Vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
 
         auto oldPosition = state.camPosition;
-
-        glm::vec3 extraPosition = state.camPosition + dirExtra;
-        state.camPosition += moveDir;
+        Vec3 extraPosition = state.camPosition + dirExtra;
 
         if (dX != 0.0 || dY != 0.0) {
-
-            float x = extraPosition[0];
-            float y = extraPosition[1];
-            float z = extraPosition[2];
-
-            PlayerLoc loc(x,y,z);
-
-            if (scene.IsCollision(loc)) {
+            if (scene.IsCollision(extraPosition)) {
                 printf("collision\n");
                 state.camPosition = oldPosition;
-            }
+            } else state.camPosition += moveDir;
         }
 
-//        auto keyPosition = state.camPosition + dKey;
+        printf("location %f %f %f\n", state.camPosition.x, state.camPosition.y, state.camPosition.z);
 
         // Clear the screen to default color
         glClearColor(.2f, 0.4f, 0.8f, 1.0f);

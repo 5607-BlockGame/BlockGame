@@ -31,7 +31,7 @@ struct Movement {
 struct State {
     bool quit = false;
     bool fullscreen = false;
-    glm::vec3 camPosition;
+    Vec3 camPosition;
     float angle;
     float angle2;
     Movement movement;

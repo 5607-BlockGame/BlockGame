@@ -35,6 +35,25 @@ struct Vec3D {
         return {x + other.x, y + other.y, z + other.z};
     }
 
+    void operator+=(const Vec3D<T> &other) {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+    }
+
+    bool operator[](size_t value){
+        switch(value){
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                assert(false); // this should never happen ... TODO: is this good style
+        }
+    }
+
     bool operator==(const Vec3D &rhs) const {
         return x == rhs.x &&
                y == rhs.y &&

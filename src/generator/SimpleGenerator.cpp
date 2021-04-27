@@ -18,7 +18,7 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
 
                 if (z == 0) {
                     set = Block(BlockType::BEDROCK); // bottom is bedrock
-                } else if (z <= 20) {
+                } else if (z <= 24) {
                     set = Block(BlockType::STONE); // up to 200 is stone
                 } else {
                     set = Block(BlockType::AIR); // rest is air

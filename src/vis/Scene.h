@@ -64,34 +64,38 @@ public:
     }
 
 
-    void Draw(PlayerLoc loc) {
-        ChunkCoord baseChunkCoord = Chunk::Location(loc);
+    void Draw(PlayerLoc playerLoc) {
+        ChunkCoord baseChunkCoord = Chunk::Location(playerLoc);
 
-        int baseY = (int) loc.y;
+        int baseZ = (int) playerLoc.z;
 
-        int minY = Chunk::BoundY(baseY - SEE_Y);
-        int maxY = Chunk::BoundY(baseY + SEE_Y);
+        int minZ = Chunk::BoundZ(baseZ - SEE_Y);
+        int maxZ = Chunk::BoundZ(baseZ + SEE_Y);
 
         for (int chunkDX = -CHUNK_VIEW_DIST; chunkDX <= CHUNK_VIEW_DIST; ++chunkDX) {
             for (int chunkDY = -CHUNK_VIEW_DIST; chunkDY <= CHUNK_VIEW_DIST; ++chunkDY) {
                 int chunkX = baseChunkCoord.x + chunkDX;
                 int chunkY = baseChunkCoord.y + chunkDY;
 
+                auto chunkStartX = (double) (chunkX << 4);
+                auto chunkStartY = (double) (chunkY << 4);
+
                 ChunkCoord chunkCoord(chunkX, chunkY);
                 Chunk *chunk = world.GetChunk(chunkCoord);
 
-                for (int z = minY; z <= maxY; ++z) {
-                    for (int x = 0; x < CHUNK_WIDTH; ++x) { // TODO: is iteration in right order?
-                        for (int y = 0; y < CHUNK_WIDTH; ++y) {
-                            BlockLocation blockLocation(x, y, z);
+                for (int blockZ = minZ; blockZ <= maxZ; ++blockZ) {
+                    for (int blockX = 0; blockX < CHUNK_WIDTH; ++blockX) { // TODO: is iteration in right order?
+                        for (int blockY= 0; blockY < CHUNK_WIDTH; ++blockY) {
+                            BlockLocation blockLocation(blockX, blockY, blockZ);
                             Block &block = chunk->GetBlock(blockLocation);
                             if(block.type == BlockType::AIR) continue; // we do not draw air
-                            auto blockId = static_cast<unsigned int>(block.type);
                             TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
 
-                            double actualX = loc.x + (double) chunkDX * CHUNK_WIDTH + x;
-                            double actualZ = loc.z + (double) chunkDY * CHUNK_WIDTH + z;
-                            auto actualY = (double) y;
+                            double actualX = chunkStartX + blockX;
+                            double actualY = chunkStartY + blockY;
+
+                            auto actualZ = (double) blockZ;
+
                             Draw(actualX, actualY, actualZ, texturedModel);
                         }
                     }
@@ -101,12 +105,15 @@ public:
     }
 
     // https://stackoverflow.com/questions/56229367/opengl-make-object-stick-to-camera
-    void DrawPlayer(float handRotation, glm::mat4 view) {
+    void DrawPlayer(PlayerLoc loc, glm::vec3 forward, float rotation, glm::mat4 view) {
+        glm::vec3 up(0.0,0.0,1.0);
+        glm::vec3 right = glm::normalize(glm::cross(up, forward));
         double handX =  0.05f;
         double handY = -0.01f;
         double handZ = -0.05f;
-        DrawHand(handX, handY, handZ, handRotation, view);
+        DrawHand(handX, handY, handZ, rotation, view);
     }
+
 
 
 private:

@@ -214,6 +214,13 @@ int main(int argc, char *argv[]) {
                     break;
                 case SDL_KEYDOWN:
                     handleKeyHold(state, windowEvent.key.keysym.sym);
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    state.isMining = true;
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    state.isMining = false;
+                    break;
             }
 
             SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
@@ -246,6 +253,14 @@ int main(int argc, char *argv[]) {
                 printf("collision\n");
                 state.camPosition = oldPosition;
             }
+        }
+
+        // Animate hand if mining block
+        if (state.isMining) {
+            if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
+            else state.handRotation -= 3.0 * M_PI / 180.0;
+        } else {
+            state.handRotation = -20.0 * M_PI / 180.0;
         }
 
 //        auto keyPosition = state.camPosition + dKey;
@@ -287,6 +302,7 @@ int main(int argc, char *argv[]) {
         glBindVertexArray(vao);
 
         scene.Draw(state.camPosition);
+        scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
 
         SDL_GL_SwapWindow(window); //Double buffering
 

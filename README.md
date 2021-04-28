@@ -11,3 +11,7 @@ src/repr/*          representations of data (Chunk, World, Block), etc.
 src/main            really messy right now should probably be separated into multiple files
 ```
 
+## Installation
+
+### MacOS
+Install all dependencies listed in `dependencies.sh`. You can install with `./dependencies.sh`

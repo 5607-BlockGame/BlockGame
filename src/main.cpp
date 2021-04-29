@@ -60,6 +60,15 @@ void handleKeyPress(State &state, int code) {
             break;
         case SDLK_f:
             state.fullscreen = !state.fullscreen;
+            break;
+        case SDLK_a:
+        case SDLK_d:
+            state.movement.sideStrafe = 0;
+            break;
+        case SDLK_w:
+        case SDLK_s:
+            state.movement.forwardStrafe = 0;
+            break;
         default:
             break;
     }
@@ -69,16 +78,17 @@ void handleKeyHold(State &state, int code) {
     auto &movement = state.movement;
     switch (code) {
         case SDLK_a:
-            movement.sideStrafe -= 1;
+//            movement.sideStrafe -= 1;
+            movement.sideStrafe = -1;
             break;
         case SDLK_d:
-            movement.sideStrafe += 1;
+            movement.sideStrafe = 1;
             break;
         case SDLK_w:
-            movement.forwardStrafe += 1;
+            movement.forwardStrafe = 1;
             break;
         case SDLK_s:
-            movement.forwardStrafe -= 1;
+            movement.forwardStrafe = -1;
             break;
         case SDLK_SPACE:
             // if on ground
@@ -198,8 +208,8 @@ int main(int argc, char *argv[]) {
 //        }
 
         // reset movement
-        state.movement.sideStrafe = 0.0;
-        state.movement.forwardStrafe = 0.0;
+//        state.movement.sideStrafe = 0.0;
+//        state.movement.forwardStrafe = 0.0;
 
         while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {

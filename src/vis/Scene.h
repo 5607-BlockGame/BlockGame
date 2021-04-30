@@ -57,7 +57,8 @@ public:
 
         BlockLocation blockLocation(iX, iY, iZ);
 
-        if(iY < 0 || iY >= CHUNK_HEIGHT) return false;
+        // out of bounds
+        if(iZ < 0 || iZ >= CHUNK_HEIGHT) return false;
 
         Block block = world.getBlockAt(blockLocation);
 

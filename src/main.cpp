@@ -283,7 +283,6 @@ int main(int argc, char *argv[]) {
 
         if (moveDir.hasMagnitude()) {
             if (scene.IsCollision(extraPosition)) {
-//                printf("collision\n");
                 state.camPosition = oldPosition;
             } else{
                 state.camPosition += moveDir;

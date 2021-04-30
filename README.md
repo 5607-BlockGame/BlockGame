@@ -40,7 +40,7 @@ The goals we plan to accompish are as follows
 - [ ] Simple Physics (jumping)
 - [ ] Flying (activate and de-activate)
 - [x] Collision
-- [ ] Cross hair
+- [x] Cross hair
 - [ ] Block selection indicator
 - [ ] Building
 - [ ] Break blocks

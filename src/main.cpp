@@ -111,7 +111,7 @@ void handleKeyHold(State &state, int code) {
     }
 }
 
-bool fullscreen = false;
+bool fullscreen = true;
 int screen_width = 800;
 int screen_height = 600;
 
@@ -136,6 +136,9 @@ int main(int argc, char *argv[]) {
     SDL_GLContext context = SDL_GL_CreateContext(window);
 
     Utils::loadGlad();
+//
+//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
 
     auto woodTexture = Utils::loadBMP("textures/wood.bmp", false);
     const auto WOOD_TEXTURE_ID = 0;
@@ -209,6 +212,7 @@ int main(int argc, char *argv[]) {
     glBindVertexArray(0);
 
     glEnable(GL_DEPTH_TEST);
+//    glEnable(GL_MULTISAMPLE); // multiple samples
 
     SimpleGenerator generator;
 

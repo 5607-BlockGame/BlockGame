@@ -20,7 +20,7 @@ private:
     std::vector<PlayerData> playerData;
     std::unordered_map<ChunkCoord, Chunk> chunksInMemory;
 public:
-    Vec3D<double> spawnPoint = Vec3D<double>(0.0, 0.0, 255.0);
+    Vec3D<double> spawnPoint = Vec3D<double>(0.0, 0.0, 30.0);
 
     World(Generator &generator) : generator(generator) {}
 

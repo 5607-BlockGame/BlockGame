@@ -18,13 +18,13 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
             auto actualX = (float) (startX + (long) x);
             auto actualY = (float) (startY + (long) y);
 
-            float sx = actualX * 0.001f;
-            float sy = actualY * 0.001f;
+            float sx = actualX * 0.01f;
+            float sy = actualY * 0.01f;
 
             // [0, 1]
             float noiseVal = (SimplexNoise::noise(sx, sy) + 1.0f) / 2.0f;
 
-            int height = (int)(CHUNK_HEIGHT * noiseVal);
+            int height = (int)(30 * noiseVal) + 1;
 
             for (size_t z = 0; z < height; ++z) {
 

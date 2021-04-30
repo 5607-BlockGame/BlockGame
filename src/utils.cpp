@@ -146,7 +146,7 @@ namespace Utils {
         return buffer;
     }
 
-    unsigned int loadBMP(const std::string &filePath) {
+    unsigned int loadBMP(const std::string &filePath, bool transparent) {
         //// Allocate Texture 0 (Wood) ///////
         SDL_Surface *surface = SDL_LoadBMP(filePath.c_str());
         if (surface == nullptr) { //If it failed, print the error
@@ -163,7 +163,12 @@ namespace Utils {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         //Load the texture into memory
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_BGR, GL_UNSIGNED_BYTE, surface->pixels);
+        if (transparent) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, surface->pixels);
+        } else {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_BGR, GL_UNSIGNED_BYTE, surface->pixels);
+        }
+
         glGenerateMipmap(GL_TEXTURE_2D); //Mip maps the texture
 
         SDL_FreeSurface(surface);

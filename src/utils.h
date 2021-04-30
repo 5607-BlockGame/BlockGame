@@ -32,6 +32,27 @@ struct Model {
     friend std::ostream &operator<<(std::ostream &os, const Model &model);
 };
 
+struct CrossHair {
+    float vertices[24] =
+    {
+        // pos      // tex
+        0.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+
+        0.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 0.0f
+    };
+
+    int numVertices = 6;
+    int textureId = 2;
+
+    void draw() const {
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+};
+
 namespace Utils {
     Model loadModel(const std::string &name);
 
@@ -46,7 +67,7 @@ namespace Utils {
 
     void drawGeometry(unsigned int shaderProgram, const Model& model1, const Model& model2, float colR, float colG, float colB);
 
-    unsigned int loadBMP(const std::string &filePath);
+    unsigned int loadBMP(const std::string &filePath, bool transparent);
 
 }
 

@@ -14,7 +14,10 @@ src/main            really messy right now should probably be separated into mul
 # Installation
 
 ## MacOS
-Install all dependencies listed in `dependencies.sh`. You can install with `./dependencies.sh`
+
+- Make sure to clone the repo recursively `git clone {url} --recursive`
+  - If you have already cloned do `git pull --recurse-submodules`
+- Install all dependencies listed in `dependencies.sh`. You can install with `./dependencies.sh`
 
 
 # Progress Report

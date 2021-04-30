@@ -43,6 +43,8 @@ const float MOUSE_SENSITIVITY = 0.001;
 void handleMouseMove(State &state, const SDL_MouseMotionEvent &event, SDL_Window *window) {
     state.angle += MOUSE_SENSITIVITY * (float) event.xrel;
     state.angle2 += MOUSE_SENSITIVITY * (float) event.yrel;
+    if(state.angle2 >= M_PI_2) state.angle2 = M_PI_2 - 0.0001;
+    if(state.angle2 <= -M_PI_2) state.angle2 = -M_PI_2 - 0.0001;
     int width, height;
     SDL_GetWindowSize(window, &width, &height);
 

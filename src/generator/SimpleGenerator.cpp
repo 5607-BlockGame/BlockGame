@@ -9,17 +9,17 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
 
     Chunk chunk;
 
-    int startX = coord.x << 4;
-    int startY = coord.y << 4;
+    long startX = coord.x << 4;
+    long startY = coord.y << 4;
 
     for (size_t x = 0; x < CHUNK_WIDTH; ++x) {
         for (size_t y = 0; y < CHUNK_WIDTH; ++y) {
 
-            float actualX = startX + x;
-            float actualY = startY + y;
+            auto actualX = (float) (startX + (long) x);
+            auto actualY = (float) (startY + (long) y);
 
-            float sx = actualX * 0.1f;
-            float sy = actualY * 0.1f;
+            float sx = actualX * 0.001f;
+            float sy = actualY * 0.001f;
 
 
             // [0, 1]
@@ -35,10 +35,8 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
 
                 if (z == 0) {
                     set = Block(BlockType::BEDROCK); // bottom is bedrock
-                } else if (z <= 24) {
-                    set = Block(BlockType::STONE); // up to 200 is stone
                 } else {
-                    set = Block(BlockType::AIR); // rest is air
+                    set = Block(BlockType::STONE); // up to 200 is stone
                 }
             }
         }

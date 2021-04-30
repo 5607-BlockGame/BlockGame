@@ -35,7 +35,7 @@ const float KEY_DIST = 0.5f;
 const float KEY_HEIGHT = -0.1f;
 
 const float JUMP_VEL = 0.07;
-const float FLY_VEL = 0.04;
+const float FLY_VEL = 0.40;
 const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;
@@ -260,8 +260,6 @@ int main(int argc, char *argv[]) {
 
         auto &movement = state.movement;
 
-//        Vec3 lookDir(-cos(state.angle), sin(state.angle), 0);
-
         glm::vec3 lookDirGlm(1.0,0.0,0.0);
         glm::vec3 moveDirGlm(STRAFE_SPEED * movement.forwardStrafe, -STRAFE_SPEED * movement.sideStrafe,movement.velocityZ);
 
@@ -298,8 +296,6 @@ int main(int argc, char *argv[]) {
             state.handRotation = -20.0 * M_PI / 180.0;
         }
 
-//        auto keyPosition = state.camPosition + dKey;
-
         // Clear the screen to default color
         glClearColor(.2f, 0.4f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -329,7 +325,7 @@ int main(int argc, char *argv[]) {
         GLint uniView = glGetUniformLocation(texturedShader, "view");
         glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
-        // Set Perspective ::: zNear zFar
+        // Set Perspective ::: zNear zFar frustum
         glm::mat4 proj = glm::perspective(FOV_Y, aspect, ZNEAR, ZFAR);
         GLint uniProj = glGetUniformLocation(texturedShader, "proj");
         glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));

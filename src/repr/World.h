@@ -20,7 +20,7 @@ private:
     std::vector<PlayerData> playerData;
     std::unordered_map<ChunkCoord, Chunk> chunksInMemory;
 public:
-    Vec3D<double> spawnPoint = Vec3D<double>(0.0, 0.0, 25.0);
+    Vec3D<double> spawnPoint = Vec3D<double>(0.0, 0.0, 255.0);
 
     World(Generator &generator) : generator(generator) {}
 
@@ -30,10 +30,10 @@ public:
         if (chunkInMem != nullptr) return chunkInMem;
 
         // try disk next
-        auto chunkOnDisk = GetChunkOnDisk(coord);
-        if (chunkOnDisk) { // is optional
-            return AddChunkToMemory(chunkOnDisk.value(), coord);
-        }
+//        auto chunkOnDisk = GetChunkOnDisk(coord);
+//        if (chunkOnDisk) { // is optional
+//            return AddChunkToMemory(chunkOnDisk.value(), coord);
+//        }
 
         // if all else fails, generate the chunk.
         auto generatedChunk = generator.Generate(coord);

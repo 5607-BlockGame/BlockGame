@@ -26,7 +26,6 @@ struct Vec3D {
 
     Vec3D(T x, T y, T z) : x(x), y(y), z(z) {}
 
-
     Vec3D<T> operator>>(const int amount) const {
         return {x >> amount, y >> amount, z >> amount};
     }

@@ -19,7 +19,7 @@ enum class Strafe {
 struct Movement {
     float sideStrafe = 0.0;
     float forwardStrafe =0.0;
-    float velocityY = 0.0;
+    float velocityZ = 0.0;
     static Movement Default(){
         Movement movement;
         return movement;

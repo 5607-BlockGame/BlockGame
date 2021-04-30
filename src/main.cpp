@@ -72,7 +72,7 @@ void handleKeyPress(State &state, int code) {
             break;
         case SDLK_SPACE:
         case SDLK_LSHIFT:
-            state.movement.velocityY = 0;
+            state.movement.velocityZ = 0;
         default:
             break;
     }
@@ -95,14 +95,14 @@ void handleKeyHold(State &state, int code) {
             movement.forwardStrafe = -1;
             break;
         case SDLK_SPACE:
-            state.movement.velocityY = FLY_VEL;
+            state.movement.velocityZ = FLY_VEL;
             // if on ground
 //            if (state.camPosition[2] == 0.0) { TODO: re-implement
-//                state.movement.velocityY = JUMP_VEL;
+//                state.movement.velocityZ = JUMP_VEL;
 //            }
             break;
         case SDLK_LSHIFT:
-            state.movement.velocityY = -FLY_VEL;
+            state.movement.velocityZ = -FLY_VEL;
             break;
         default:
             break;
@@ -232,21 +232,6 @@ int main(int argc, char *argv[]) {
         unsigned int millisPast = t_start - t_prev;
         float secondsPast = millisPast / 1000.F;
 
-//        if (!state.onGround() || state.movement.velocityY != 0.0f) {
-//            state.camPosition[2] += state.movement.velocityY;
-//            if (state.camPosition[2] < 0.0f) { // so we always hit ground
-//                state.camPosition[2] = 0.0f;
-//            }
-//
-//            state.movement.velocityY -= ACC_G * secondsPast;
-//        }
-
-        // reset movement
-//        state.movement.sideStrafe = 0.0;
-//        state.movement.forwardStrafe = 0.0;
-
-//        state.movement.velocityY = 0;
-
         while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {
                 case SDL_MOUSEMOTION:
@@ -274,14 +259,24 @@ int main(int argc, char *argv[]) {
 
 
         auto &movement = state.movement;
-        float dX = -STRAFE_SPEED * cos(state.angle) * movement.forwardStrafe + STRAFE_SPEED * sin(state.angle) * movement.sideStrafe;
-        float dY = STRAFE_SPEED * sin(state.angle) * movement.forwardStrafe + STRAFE_SPEED * cos(state.angle) * movement.sideStrafe;
-        float dZ = movement.velocityY;
 
-        Vec3 moveDir(dX, dY, dZ);
+//        Vec3 lookDir(-cos(state.angle), sin(state.angle), 0);
 
+        glm::vec3 lookDirGlm(1.0,0.0,0.0);
+        glm::vec3 moveDirGlm(STRAFE_SPEED * movement.forwardStrafe, -STRAFE_SPEED * movement.sideStrafe,movement.velocityZ);
+
+
+        glm::mat4 rotMat(1);
+        rotMat = glm::rotate(rotMat, -state.angle, glm::vec3(0,0,1));
+        moveDirGlm = glm::vec3(rotMat * glm::vec4(moveDirGlm, 1.0));
+
+        rotMat = glm::rotate(rotMat, state.angle2, glm::vec3(0,1,0));
+
+        lookDirGlm = glm::vec3(rotMat * glm::vec4(lookDirGlm, 1.0));
+
+        Vec3 lookDir = lookDirGlm;
+        Vec3 moveDir = moveDirGlm;
         Vec3 dirExtra = moveDir * EXTRA_FACTOR;
-        Vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
 
         auto oldPosition = state.camPosition;
         Vec3 extraPosition = state.camPosition + dirExtra;

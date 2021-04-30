@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
 project(BlockGame)
 
+add_compile_options(-O3 -Ofast -march=native)
+#add_link_options(-O3 -Ofast -march=native -flto)
 #add_compile_options(-fsanitize=address)
 #add_link_options(-fsanitize=address)
 set(CMAKE_CXX_STANDARD 17)

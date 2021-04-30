@@ -16,8 +16,8 @@ struct TexturedModel {
 
 TexturedModel::TexturedModel(Model &model, unsigned int textureId) : model(model), textureId(textureId) {}
 
-const int SEE_Z = 8;
-const int CHUNK_VIEW_DIST = 1;
+const int SEE_Z = 40;
+const int CHUNK_VIEW_DIST = 4;
 
 class Scene {
 private:
@@ -86,20 +86,26 @@ public:
                 ChunkCoord chunkCoord(chunkX, chunkY);
                 Chunk *chunk = world.GetChunk(chunkCoord);
 
-                for (int blockZ = minZ; blockZ <= maxZ; ++blockZ) {
-                    for (int blockX = 0; blockX < CHUNK_WIDTH; ++blockX) { // TODO: is iteration in right order?
-                        for (int blockY= 0; blockY < CHUNK_WIDTH; ++blockY) {
+                for (int blockX = 0; blockX < CHUNK_WIDTH; ++blockX) { // TODO: is iteration in right order?
+                    for (int blockY= 0; blockY < CHUNK_WIDTH; ++blockY) {
+                        for (int blockZ = minZ; blockZ <= maxZ; ++blockZ) {
                             BlockLocation blockLocation(blockX, blockY, blockZ);
                             Block &block = chunk->GetBlock(blockLocation);
-                            if(block.type == BlockType::AIR) continue; // we do not draw air
-                            TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
+                            if(block.type == BlockType::AIR){
+                                // this is a bad optimization ... it assumes no caves
+                                if(blockZ != minZ && blockZ != 0){
+                                    TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
 
-                            double actualX = chunkStartX + blockX;
-                            double actualY = chunkStartY + blockY;
+                                    double actualX = chunkStartX + blockX;
+                                    double actualY = chunkStartY + blockY;
 
-                            auto actualZ = (double) blockZ;
+                                    auto actualZ = (double) blockZ - 1.0;
 
-                            Draw(actualX, actualY, actualZ, texturedModel);
+                                    Draw(actualX, actualY, actualZ, texturedModel);
+                                }
+                                break;
+                            }
+
                         }
                     }
                 }

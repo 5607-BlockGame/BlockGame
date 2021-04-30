@@ -43,7 +43,7 @@ public:
 
     }
 
-    void ResetModel() {
+    inline void ResetModel() {
         model = glm::mat4(1);
     }
 
@@ -77,7 +77,7 @@ public:
         int minZ = Chunk::BoundZ(baseZ - SEE_Z);
         int maxZ = Chunk::BoundZ(baseZ + SEE_Z);
 
-        TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
+//        TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
 
         for (int chunkDX = -CHUNK_VIEW_DIST; chunkDX <= CHUNK_VIEW_DIST; ++chunkDX) {
             for (int chunkDY = -CHUNK_VIEW_DIST; chunkDY <= CHUNK_VIEW_DIST; ++chunkDY) {
@@ -98,7 +98,7 @@ public:
                         double actualY = chunkStartY + blockY;
                         auto actualZ = (double) topBlock.z - 1.0;
 
-                        Draw(actualX, actualY, actualZ, texturedModel);
+                        Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
 
                     }
                 }
@@ -126,15 +126,14 @@ public:
 private:
 
 //
-//    void Draw(float x, float z, float z, const Model &model, float r, float g, float b, float scale = 1.0, float rotation = 0.0) {
-//        SetColor(r, g, b);
-//        SetTranslation(x, z, z);
+    void Draw(float x, float y, float z, const Model &model, float r, float g, float b, float scale = 1.0) {
+        SetColor(r, g, b);
+        SetTranslation(x, y, z);
 //        SetScale(scale);
-//        SetRotation(rotation);
-//        SendTransformations();
-//        model.draw();
-//        ResetModel();
-//    }
+        SendTransformations();
+        model.draw();
+        ResetModel();
+    }
 
     void DrawHand(double x, double y, double z, float rotation, glm::mat4 view) {
         SetColor(1.0, 0.86, 0.67);        // Skin color
@@ -166,7 +165,7 @@ private:
         crossHair.draw();
     }
 
-    void SendTransformations() {
+    inline void SendTransformations() {
         glUniformMatrix4fv(modelParam, 1, GL_FALSE, glm::value_ptr(model));
     }
 
@@ -178,7 +177,7 @@ private:
         model = glm::scale(model, glm::vec3(x, y, z));
     }
 
-    void SetTranslation(double x, double y, double z) {
+    inline void SetTranslation(double x, double y, double z) {
         model = glm::translate(model, glm::vec3(x, y, z));
     }
 
@@ -198,7 +197,7 @@ private:
         glUniform1i(textureIdParam, (int) id);
     }
 
-    void SetColor(float r, float g, float b) {
+    inline void SetColor(float r, float g, float b) {
         glm::vec3 colVec(r, g, b);
         glUniform3fv(colorParam, 1, glm::value_ptr(colVec));
         SetTexture(-1);

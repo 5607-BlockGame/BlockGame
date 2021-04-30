@@ -16,7 +16,7 @@ src/main            really messy right now should probably be separated into mul
 ## MacOS
 
 - Make sure to clone the repo recursively `git clone {url} --recursive`
-  - If you have already cloned do `git pull --recurse-submodules`
+  - If you have already cloned do `git submodule update --init`
 - Install all dependencies listed in `dependencies.sh`. You can install with `./dependencies.sh`
 
 

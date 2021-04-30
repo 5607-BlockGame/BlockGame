@@ -23,15 +23,17 @@ class Scene {
 private:
     World &world;
     unsigned int shaderProgram;
+    unsigned int shader2DProgram;
     GLint modelParam;
     GLint textureIdParam;
     GLint colorParam;
     glm::mat4 model;
     Model& blockModel;
+    CrossHair& crossHair;
 
 public:
 
-    Scene(World &world, unsigned int shaderProgram, Model &blockModel) : world(world), shaderProgram(shaderProgram), blockModel(blockModel) {
+    Scene(World &world, unsigned int shaderProgram, unsigned int shader2DProgram, Model &blockModel, CrossHair &crossHair) : world(world), shaderProgram(shaderProgram), shader2DProgram(shader2DProgram), blockModel(blockModel), crossHair(crossHair) {
         modelParam = glGetUniformLocation(shaderProgram, "model");
         textureIdParam = glGetUniformLocation(shaderProgram, "texID");
         colorParam = glGetUniformLocation(shaderProgram, "inColor");
@@ -114,6 +116,12 @@ public:
         DrawHand(handX, handY, handZ, rotation, view);
     }
 
+    void DrawCrossHair(double x, double y) {
+        double scaleX = 40;
+        double scaleY = 40;
+        DrawCrossHair(x, y, scaleX, scaleY);
+    }
+
 
 
 private:
@@ -148,6 +156,15 @@ private:
         SendTransformations();
         texturedModel.model.draw();
         ResetModel();
+    }
+
+    void DrawCrossHair(double x, double y, float scaleX, float scaleY) {
+        SetTranslation(x, y, 0.0f);
+        SetScale(scaleX, scaleY, 1.0f);
+        GLint model2D = glGetUniformLocation(shader2DProgram, "model");
+        glUniformMatrix4fv(model2D, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(glGetUniformLocation(shader2DProgram, "image"), crossHair.textureId);
+        crossHair.draw();
     }
 
     void SendTransformations() {

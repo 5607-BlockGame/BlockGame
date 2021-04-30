@@ -117,11 +117,14 @@ int main(int argc, char *argv[]) {
 
     Utils::loadGlad();
 
-    auto woodTexture = Utils::loadBMP("textures/wood.bmp");
+    auto woodTexture = Utils::loadBMP("textures/wood.bmp", false);
     const auto WOOD_TEXTURE_ID = 0;
 
-    auto brickTexture = Utils::loadBMP("textures/brick.bmp");
+    auto brickTexture = Utils::loadBMP("textures/brick.bmp", false);
     const auto BRICK_TEXTURE_ID = 1;
+
+    auto crossHairTexture = Utils::loadBMP("textures/crosshair.bmp", true);
+    const auto CROSSHAIR_TEXTURE_ID = 2;
 
     Model cubeModel = Utils::loadModel("models/cube.txt");
 
@@ -138,6 +141,7 @@ int main(int argc, char *argv[]) {
     glGenBuffers(1, vbo);  //Create 1 buffer called vbo
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); //Set the vbo as the active array buffer (Only one buffer can be active at brickCube time)
     glBufferData(GL_ARRAY_BUFFER, combined.GetNumberLines() * sizeof(float), combined.data.data(), GL_STATIC_DRAW); //upload vertices to vbo
+
 
     auto texturedShader = Utils::InitShader("shaders/textured-Vertex.glsl", "shaders/textured-Fragment.glsl");
 
@@ -162,13 +166,35 @@ int main(int argc, char *argv[]) {
 
     glBindVertexArray(0); //Unbind the VAO in case we want to create brickCube new one
 
+    // Crosshair data
+    CrossHair crossHair;
+
+    GLuint vao2d;
+    glGenVertexArrays(1, &vao2d);
+    glBindVertexArray(vao2d); // Bind the above created VAO to the current context
+
+    // Allocate memory on the graphics card to store geometry (vertex buffer object)
+    GLuint vbo2d[1];
+    glGenBuffers(1, vbo2d);  // Create 1 buffer called vbo2d
+    glBindBuffer(GL_ARRAY_BUFFER, vbo2d[0]); // Set the vbo2d as the active array buffer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(crossHair.vertices), crossHair.vertices, GL_STATIC_DRAW); //upload vertices to vbo2d
+
+    auto textured2dShader = Utils::InitShader("shaders/vertex2D.glsl", "shaders/fragment2D.glsl");
+
+    GLint vertexAttrib = glGetAttribLocation(textured2dShader, "vertex");
+    glEnableVertexAttribArray(vertexAttrib);
+    glVertexAttribPointer(vertexAttrib, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     glEnable(GL_DEPTH_TEST);
 
     SimpleGenerator generator;
 
     World world(generator);
 
-    Scene scene(world, texturedShader, cubeModel);
+    Scene scene(world, texturedShader, textured2dShader, cubeModel, crossHair);
 
 
     State state{
@@ -260,7 +286,7 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(texturedShader); //Set the active shader (only one can be used at brickCube time)
-
+        glEnable(GL_DEPTH_TEST);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, woodTexture);
         glUniform1i(glGetUniformLocation(texturedShader, "tex0"), WOOD_TEXTURE_ID);
@@ -294,6 +320,27 @@ int main(int argc, char *argv[]) {
         scene.Draw(state.camPosition);
         scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
 
+        // Switch to 2D to render crosshair
+        glUseProgram(textured2dShader); //Set the active shader
+        glDisable(GL_DEPTH_TEST);
+
+        // Tutorial: https://learnopengl.com/Advanced-OpenGL/Blending
+        glEnable(GL_BLEND);     // Enable  blending because texture has transparency
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Tutorial: https://learnopengl.com/In-Practice/2D-Game/Rendering-Sprites
+        glBindVertexArray(vao2d);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo2d[0]);
+
+        glm::mat4 proj2D = glm::ortho(0.0f, (float) screen_width, (float) screen_height, 0.0f, -1.0f, 1.0f);
+        GLint uniProj2D = glGetUniformLocation(textured2dShader, "projection");
+        glUniformMatrix4fv(uniProj2D, 1, GL_FALSE, glm::value_ptr(proj2D));
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, crossHairTexture);
+
+        scene.DrawCrossHair(screen_width/2, screen_height/2);
+
         SDL_GL_SwapWindow(window); //Double buffering
 
         unsigned int t_end = SDL_GetTicks();
@@ -309,8 +356,11 @@ int main(int argc, char *argv[]) {
 
     //Clean Up
     glDeleteProgram(texturedShader);
+    glDeleteProgram(textured2dShader);
     glDeleteBuffers(1, vbo);
     glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, vbo2d);
+    glDeleteVertexArrays(1, &vao2d);
 
     SDL_GL_DeleteContext(context);
     SDL_Quit();

@@ -35,14 +35,22 @@ struct Vec3D {
         return {x + other.x, y + other.y, z + other.z};
     }
 
+    Vec3D<T> operator*(double scalar) const {
+        return {x * scalar, y * scalar, z * scalar};
+    }
+
+    bool hasMagnitude() {
+        return x != 0 || y != 0 || z != 0;
+    }
+
     void operator+=(const Vec3D<T> &other) {
         x += other.x;
         y += other.y;
         z += other.z;
     }
 
-    bool operator[](size_t value){
-        switch(value){
+    bool operator[](size_t value) {
+        switch (value) {
             case 0:
                 return x;
             case 1:

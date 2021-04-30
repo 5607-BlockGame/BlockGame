@@ -35,6 +35,7 @@ const float KEY_DIST = 0.5f;
 const float KEY_HEIGHT = -0.1f;
 
 const float JUMP_VEL = 0.07;
+const float FLY_VEL = 0.04;
 const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;
@@ -69,6 +70,9 @@ void handleKeyPress(State &state, int code) {
         case SDLK_s:
             state.movement.forwardStrafe = 0;
             break;
+        case SDLK_SPACE:
+        case SDLK_LSHIFT:
+            state.movement.velocityY = 0;
         default:
             break;
     }
@@ -91,10 +95,14 @@ void handleKeyHold(State &state, int code) {
             movement.forwardStrafe = -1;
             break;
         case SDLK_SPACE:
+            state.movement.velocityY = FLY_VEL;
             // if on ground
 //            if (state.camPosition[2] == 0.0) { TODO: re-implement
 //                state.movement.velocityY = JUMP_VEL;
 //            }
+            break;
+        case SDLK_LSHIFT:
+            state.movement.velocityY = -FLY_VEL;
             break;
         default:
             break;
@@ -237,6 +245,8 @@ int main(int argc, char *argv[]) {
 //        state.movement.sideStrafe = 0.0;
 //        state.movement.forwardStrafe = 0.0;
 
+//        state.movement.velocityY = 0;
+
         while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {
                 case SDL_MOUSEMOTION:
@@ -266,19 +276,23 @@ int main(int argc, char *argv[]) {
         auto &movement = state.movement;
         float dX = -STRAFE_SPEED * cos(state.angle) * movement.forwardStrafe + STRAFE_SPEED * sin(state.angle) * movement.sideStrafe;
         float dY = STRAFE_SPEED * sin(state.angle) * movement.forwardStrafe + STRAFE_SPEED * cos(state.angle) * movement.sideStrafe;
+        float dZ = movement.velocityY;
 
-        Vec3 moveDir(dX, dY, 0.0f);
-        Vec3 dirExtra(dX * EXTRA_FACTOR, dY * EXTRA_FACTOR, 0.0f);
+        Vec3 moveDir(dX, dY, dZ);
+
+        Vec3 dirExtra = moveDir * EXTRA_FACTOR;
         Vec3 lookDir(-cos(state.angle), sin(state.angle), -sin(state.angle2));
 
         auto oldPosition = state.camPosition;
         Vec3 extraPosition = state.camPosition + dirExtra;
 
-        if (dX != 0.0 || dY != 0.0) {
+        if (moveDir.hasMagnitude()) {
             if (scene.IsCollision(extraPosition)) {
                 printf("collision\n");
                 state.camPosition = oldPosition;
-            } else state.camPosition += moveDir;
+            } else{
+                state.camPosition += moveDir;
+            }
         }
 
         // Animate hand if mining block

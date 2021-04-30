@@ -9,15 +9,14 @@
 struct TexturedModel {
     Model &model;
     unsigned int textureId;
-
     TexturedModel(Model &model, unsigned int textureId);
 };
 
 
 TexturedModel::TexturedModel(Model &model, unsigned int textureId) : model(model), textureId(textureId) {}
 
-const int SEE_Z = 40;
-const int CHUNK_VIEW_DIST = 4;
+//const int SEE_Z = 40;
+const int CHUNK_VIEW_DIST = 6;
 
 class Scene {
 private:
@@ -74,8 +73,8 @@ public:
 
         int baseZ = (int) playerLoc.z;
 
-        int minZ = Chunk::BoundZ(baseZ - SEE_Z);
-        int maxZ = Chunk::BoundZ(baseZ + SEE_Z);
+//        int minZ = Chunk::BoundZ(baseZ - SEE_Z);
+//        int maxZ = Chunk::BoundZ(baseZ + SEE_Z);
 
 //        TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
 

@@ -16,8 +16,8 @@ struct TexturedModel {
 
 TexturedModel::TexturedModel(Model &model, unsigned int textureId) : model(model), textureId(textureId) {}
 
-const int SEE_Z = 16;
-const int CHUNK_VIEW_DIST = 0;
+const int SEE_Z = 8;
+const int CHUNK_VIEW_DIST = 1;
 
 class Scene {
 private:

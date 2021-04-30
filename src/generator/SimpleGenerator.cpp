@@ -21,7 +21,6 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
             float sx = actualX * 0.001f;
             float sy = actualY * 0.001f;
 
-
             // [0, 1]
             float noiseVal = (SimplexNoise::noise(sx, sy) + 1.0f) / 2.0f;
 

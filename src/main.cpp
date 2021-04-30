@@ -112,8 +112,8 @@ void handleKeyHold(State &state, int code) {
 }
 
 bool fullscreen = true;
-int screen_width = 800;
-int screen_height = 600;
+//int screen_width = 1000;
+//int screen_height = 600;
 
 char window_title[] = "My OpenGL Program";
 
@@ -126,7 +126,12 @@ int main(int argc, char *argv[]) {
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    SDL_Window *window = SDL_CreateWindow(window_title, 100, 100, screen_width, screen_height, SDL_WINDOW_OPENGL);
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+    auto screen_width = displayMode.w;
+    auto screen_height = displayMode.h;
+
+    SDL_Window *window = SDL_CreateWindow(window_title, 100, 100, screen_width, screen_height, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     SDL_SetWindowGrab(window, SDL_TRUE);
 
@@ -137,8 +142,8 @@ int main(int argc, char *argv[]) {
 
     Utils::loadGlad();
 //
-//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
 
     auto woodTexture = Utils::loadBMP("textures/wood.bmp", false);
     const auto WOOD_TEXTURE_ID = 0;
@@ -211,7 +216,6 @@ int main(int argc, char *argv[]) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glEnable(GL_DEPTH_TEST);
 //    glEnable(GL_MULTISAMPLE); // multiple samples
 
     SimpleGenerator generator;
@@ -307,6 +311,7 @@ int main(int argc, char *argv[]) {
 
         glUseProgram(texturedShader); //Set the active shader (only one can be used at brickCube time)
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, woodTexture);
         glUniform1i(glGetUniformLocation(texturedShader, "tex0"), WOOD_TEXTURE_ID);

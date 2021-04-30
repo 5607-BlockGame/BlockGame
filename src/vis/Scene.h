@@ -28,12 +28,14 @@ private:
     GLint textureIdParam;
     GLint colorParam;
     glm::mat4 model;
-    Model& blockModel;
-    CrossHair& crossHair;
+    Model &blockModel;
+    CrossHair &crossHair;
 
 public:
 
-    Scene(World &world, unsigned int shaderProgram, unsigned int shader2DProgram, Model &blockModel, CrossHair &crossHair) : world(world), shaderProgram(shaderProgram), shader2DProgram(shader2DProgram), blockModel(blockModel), crossHair(crossHair) {
+    Scene(World &world, unsigned int shaderProgram, unsigned int shader2DProgram, Model &blockModel, CrossHair &crossHair) : world(world), shaderProgram(shaderProgram),
+                                                                                                                             shader2DProgram(shader2DProgram), blockModel(blockModel),
+                                                                                                                             crossHair(crossHair) {
         modelParam = glGetUniformLocation(shaderProgram, "model");
         textureIdParam = glGetUniformLocation(shaderProgram, "texID");
         colorParam = glGetUniformLocation(shaderProgram, "inColor");
@@ -58,7 +60,7 @@ public:
         BlockLocation blockLocation(iX, iY, iZ);
 
         // out of bounds
-        if(iZ < 0 || iZ >= CHUNK_HEIGHT) return false;
+        if (iZ < 0 || iZ >= CHUNK_HEIGHT) return false;
 
         Block block = world.getBlockAt(blockLocation);
 
@@ -75,6 +77,8 @@ public:
         int minZ = Chunk::BoundZ(baseZ - SEE_Z);
         int maxZ = Chunk::BoundZ(baseZ + SEE_Z);
 
+        TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
+
         for (int chunkDX = -CHUNK_VIEW_DIST; chunkDX <= CHUNK_VIEW_DIST; ++chunkDX) {
             for (int chunkDY = -CHUNK_VIEW_DIST; chunkDY <= CHUNK_VIEW_DIST; ++chunkDY) {
                 int chunkX = baseChunkCoord.x + chunkDX;
@@ -87,26 +91,15 @@ public:
                 Chunk *chunk = world.GetChunk(chunkCoord);
 
                 for (int blockX = 0; blockX < CHUNK_WIDTH; ++blockX) { // TODO: is iteration in right order?
-                    for (int blockY= 0; blockY < CHUNK_WIDTH; ++blockY) {
-                        for (int blockZ = minZ; blockZ <= maxZ; ++blockZ) {
-                            BlockLocation blockLocation(blockX, blockY, blockZ);
-                            Block &block = chunk->GetBlock(blockLocation);
-                            if(block.type == BlockType::AIR){
-                                // this is a bad optimization ... it assumes no caves
-                                if(blockZ != minZ && blockZ != 0){
-                                    TexturedModel texturedModel(blockModel, 0); // TODO: make blockId
+                    for (int blockY = 0; blockY < CHUNK_WIDTH; ++blockY) {
+                        const TopBlock &topBlock = chunk->GetTopBlock(blockX, blockY);
 
-                                    double actualX = chunkStartX + blockX;
-                                    double actualY = chunkStartY + blockY;
+                        double actualX = chunkStartX + blockX;
+                        double actualY = chunkStartY + blockY;
+                        auto actualZ = (double) topBlock.z - 1.0;
 
-                                    auto actualZ = (double) blockZ - 1.0;
+                        Draw(actualX, actualY, actualZ, texturedModel);
 
-                                    Draw(actualX, actualY, actualZ, texturedModel);
-                                }
-                                break;
-                            }
-
-                        }
                     }
                 }
             }
@@ -115,9 +108,9 @@ public:
 
     // https://stackoverflow.com/questions/56229367/opengl-make-object-stick-to-camera
     void DrawPlayer(PlayerLoc loc, glm::vec3 forward, float rotation, glm::mat4 view) {
-        glm::vec3 up(0.0,0.0,1.0);
+        glm::vec3 up(0.0, 0.0, 1.0);
         glm::vec3 right = glm::normalize(glm::cross(up, forward));
-        double handX =  0.05f;
+        double handX = 0.05f;
         double handY = -0.01f;
         double handZ = -0.05f;
         DrawHand(handX, handY, handZ, rotation, view);
@@ -130,13 +123,12 @@ public:
     }
 
 
-
 private:
 
 //
-//    void Draw(float x, float y, float z, const Model &model, float r, float g, float b, float scale = 1.0, float rotation = 0.0) {
+//    void Draw(float x, float z, float z, const Model &model, float r, float g, float b, float scale = 1.0, float rotation = 0.0) {
 //        SetColor(r, g, b);
-//        SetTranslation(x, y, z);
+//        SetTranslation(x, z, z);
 //        SetScale(scale);
 //        SetRotation(rotation);
 //        SendTransformations();
@@ -148,7 +140,7 @@ private:
         SetColor(1.0, 0.86, 0.67);        // Skin color
         SetTranslation(x, y, z);
         SetRotationX(rotation);
-        SetScale(0.02,0.02,0.3);
+        SetScale(0.02, 0.02, 0.3);
         model = glm::inverse(view) * model;
         SendTransformations();
         blockModel.draw();

@@ -79,8 +79,8 @@ This is described in the description section
 A big difficulty has been debugging. Andrew did a lot of work at once to setup this
 project, and it took him a bit of time to figure out how to display simple blocks correctly. 
 Although computer graphics usually has the z dimension pointing up and down, Minecraft 
-has the y direction pointing up and down. Even though Andrew knew this, he was thinking
-in Minecraft-world and had a bunch of code using y where it should have been z. A good
+has the z direction pointing up and down. Even though Andrew knew this, he was thinking
+in Minecraft-world and had a bunch of code using z where it should have been z. A good
 way to avoid this is to have frequent debugging.
 
 

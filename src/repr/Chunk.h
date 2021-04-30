@@ -15,14 +15,24 @@ const size_t CHUNK_HEIGHT = 256; // super large height that probably won't work
 const size_t CHUNK_SIZE = CHUNK_HEIGHT * CHUNK_SLICE;
 const Block EMPTY_BLOCK(BlockType::AIR);
 
+
+struct TopBlock {
+    size_t z;
+    Block block;
+    TopBlock(): z(0){}
+};
+
 struct Chunk {
-
-
-    std::array<Block, CHUNK_SIZE> elements;
-
     Chunk(){
         elements = std::array<Block, CHUNK_SIZE>();
+        topBlocks = std::array<TopBlock, CHUNK_SLICE>();
     }
+
+private:
+    std::array<Block, CHUNK_SIZE> elements;
+    std::array<TopBlock, CHUNK_SLICE> topBlocks;
+public:
+
 
     static ChunkCoord Location(PlayerLoc loc) {
         const long x = (long) round(loc.x);
@@ -66,23 +76,37 @@ struct Chunk {
         os.close();
     }
 
-    [[nodiscard]] Block GetBlock(Vec3D<size_t> location) const {
-        const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.z;
-        assert(idx < CHUNK_SIZE);
-        return elements[idx];
-    }
-
-    inline Block &operator[](Vec3D<size_t> location) {
+    inline const Block &operator[](Vec3D<size_t> location) {
         return GetBlock(location);
     };
 
-    Block &GetBlock(Vec3D<size_t> location) {
-        assert(location.x >= 0);
-        assert(location.y >= 0);
-        assert(location.x < CHUNK_WIDTH);
-        assert(location.y < CHUNK_WIDTH);
-        assert(location.z >= 0);
-        assert(location.z < CHUNK_HEIGHT);
+    void SetBlock(Vec3D<size_t> location, Block block){
+        auto [x,y,z] = location;
+        assert(x >= 0);
+        assert(x < CHUNK_WIDTH);
+        assert(y >= 0);
+        assert(y < CHUNK_WIDTH);
+        assert(z >= 0);
+        assert(z < CHUNK_HEIGHT);
+
+        auto& topBlock = GetTopBlockRef(x, y);
+        if(z >= topBlock.z && block.type != BlockType::AIR){
+            topBlock.z = z;
+            topBlock.block = block;
+        }
+        else if(block.type == BlockType::AIR && topBlock.z == location.y){
+            UpdateTopBlock(x,y, topBlock);
+        }
+        const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.x;
+        elements[idx] = block;
+    }
+
+    [[nodiscard]] const TopBlock& GetTopBlock(size_t x, size_t y) const{
+        size_t idx = CHUNK_WIDTH * y + x;
+        return topBlocks[idx];
+    }
+
+    [[nodiscard]] const Block &GetBlock(Vec3D<size_t> location) const {
 
         // 15 + 16(15)
         const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.x;
@@ -90,7 +114,30 @@ struct Chunk {
         return elements[idx];
     }
 
+    [[nodiscard]] TopBlock GetTopBlock(size_t x, size_t y){
+        size_t idx = CHUNK_WIDTH * y + x;
+        return topBlocks[idx];
+    }
+
+
 private:
+    [[nodiscard]] TopBlock& GetTopBlockRef(size_t x, size_t y){
+        size_t idx = CHUNK_WIDTH * y + x;
+        return topBlocks[idx];
+    }
+
+    void UpdateTopBlock(size_t x, size_t y, TopBlock &previous){
+        for (int z = previous.z - 1; z >= 0 ; --z) {
+            Vec3D<size_t> location(x,y,z);
+            auto &block = GetBlock(location);
+            if(block.type != BlockType::AIR){
+               previous.z = z;
+               previous.block = block;
+               return;
+            }
+        }
+    }
+
     static std::string FileName(ChunkCoord coord) {
         auto format = boost::format("%1%-%2%.chunk") % coord.x % coord.y;
         return format.str();

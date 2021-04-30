@@ -40,7 +40,7 @@ public:
         return AddChunkToMemory(generatedChunk, coord);
     }
 
-    Block &getBlockAt(BlockLocation location) {
+    const Block &getBlockAt(BlockLocation location) {
         ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
         Chunk *chunk = GetChunk(chunkCoord);
 

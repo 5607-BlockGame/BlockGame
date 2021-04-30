@@ -30,12 +30,10 @@ Chunk SimpleGenerator::Generate(ChunkCoord coord) {
 
                 Vec3D<size_t> location(x, y, z);
 
-                Block &set = chunk[location];
-
                 if (z == 0) {
-                    set = Block(BlockType::BEDROCK); // bottom is bedrock
+                    chunk.SetBlock(location, Block(BlockType::BEDROCK)); // bottom is bedrock
                 } else {
-                    set = Block(BlockType::STONE); // up to 200 is stone
+                    chunk.SetBlock(location,Block(BlockType::STONE)); // up to 200 is stone
                 }
             }
         }

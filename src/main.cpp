@@ -27,7 +27,7 @@ using namespace std;
 
 
 const float FOV_Y = 3.14f / 4;
-const float STRAFE_SPEED = 0.40;
+const float STRAFE_SPEED = 3.0f;
 const float ZNEAR = 0.01;
 const float ZFAR = 300.0;
 const float EXTRA_FACTOR = 3.0f;
@@ -35,7 +35,7 @@ const float KEY_DIST = 0.5f;
 const float KEY_HEIGHT = -0.1f;
 
 const float JUMP_VEL = 0.07;
-const float FLY_VEL = 0.40;
+const float FLY_VEL = 2.0;
 const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;

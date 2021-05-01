@@ -19,6 +19,12 @@ src/main            really messy right now should probably be separated into mul
   - If you have already cloned do `git submodule update --init`
 - Install all dependencies listed in `dependencies.sh`. You can install with `./dependencies.sh`
 
+# Running
+
+- You must run from the project root directory. This can be done in CLion as seen below:
+
+![Content Root](.github/content-root.png)
+
 
 # Progress Report
 

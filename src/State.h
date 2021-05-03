@@ -19,7 +19,7 @@ enum class Strafe {
 struct Movement {
     float sideStrafe = 0.0;
     float forwardStrafe =0.0;
-    float velocityZ = 0.0;
+    float velocityZ = -1.0;
     static Movement Default(){
         Movement movement;
         return movement;
@@ -35,6 +35,7 @@ struct State {
     float angle;
     float angle2;
     Movement movement;
+    bool gravity = true;
     bool isMining = false;
     float handRotation = -20.0 * M_PI/180.0;
 

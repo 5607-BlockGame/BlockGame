@@ -111,6 +111,25 @@ void handleKeyHold(State &state, int code) {
     }
 }
 
+void handleMousePressed(Scene &scene, World &world, State& state, Vec3 lookDir, glm::mat4 view) {
+    glm::vec3 rayStart = state.camPosition;
+    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
+
+    // scene.DrawSmallCube(rayStart + dir * 5.0f);
+
+    BlockLocation blockLocation(0,0,0);
+    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
+        glm::vec3 pos = rayStart + dir * i;
+        bool hit = scene.GetBlockLocation(pos, &blockLocation);
+        if (hit) {
+            Block block = world.getBlockAt(blockLocation);
+            world.breakBlock(blockLocation);
+            break;
+        }
+    }
+}
+
+
 bool fullscreen = true;
 //int screen_width = 1000;
 //int screen_height = 600;
@@ -297,13 +316,11 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // Animate hand if mining block
-        if (state.isMining) {
-            if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
-            else state.handRotation -= 3.0 * M_PI / 180.0;
-        } else {
-            state.handRotation = -20.0 * M_PI / 180.0;
-        }
+
+
+        //////////////
+ 
+        /////////////
 
         // Clear the screen to default color
         glClearColor(.2f, 0.4f, 0.8f, 1.0f);
@@ -344,6 +361,14 @@ int main(int argc, char *argv[]) {
 
         scene.Draw(state.camPosition);
         scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
+        // Animate hand if mining block
+        if (state.isMining) {
+            handleMousePressed(scene, world, state, lookDir, view);
+            if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
+            else state.handRotation -= 3.0 * M_PI / 180.0;
+        } else {
+            state.handRotation = -20.0 * M_PI / 180.0;
+        }
 
         // Switch to 2D to render crosshair
         glUseProgram(textured2dShader); //Set the active shader

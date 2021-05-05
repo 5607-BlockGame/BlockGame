@@ -94,7 +94,7 @@ public:
             topBlock.z = z;
             topBlock.block = block;
         }
-        else if(block.type == BlockType::AIR && topBlock.z == location.y){
+        else if(block.type == BlockType::AIR && topBlock.z == location.z){
             UpdateTopBlock(x,y, topBlock);
         }
         const auto idx = CHUNK_SLICE * location.z + CHUNK_WIDTH * location.y + location.x;

@@ -67,6 +67,18 @@ public:
 
     }
 
+    bool GetBlockLocation(glm::vec3 loc, BlockLocation *blockLocation) {
+        long iX = (long) std::round(loc.x);
+        long iY = (long) std::round(loc.y);
+        long iZ = (long) std::round(loc.z);
+
+        *blockLocation = BlockLocation(iX, iY, iZ);
+        if (iZ < 0 || iZ >= CHUNK_HEIGHT) return false;
+
+        Block block = world.getBlockAt(*blockLocation);
+        return !block.IsPassthrough();
+    }
+
 
     void Draw(PlayerLoc playerLoc) {
         ChunkCoord baseChunkCoord = Chunk::Location(playerLoc);
@@ -98,7 +110,6 @@ public:
                         auto actualZ = (double) topBlock.z - 1.0;
 
                         Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
-
                     }
                 }
             }
@@ -119,6 +130,13 @@ public:
         double scaleX = 40;
         double scaleY = 40;
         DrawCrossHair(x, y, scaleX, scaleY);
+    }
+
+    void DrawSmallCube(glm::vec3 pos) {
+        // glm::vec3 pos = rayStart + dir * dist;
+        // std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
+        TexturedModel textModel(blockModel, 0);
+        Draw((double)pos.x, (double)pos.y, (double)pos.z, textModel, .1);
     }
 
 
@@ -142,6 +160,16 @@ private:
         model = glm::inverse(view) * model;
         SendTransformations();
         blockModel.draw();
+        ResetModel();
+    }
+
+    void DrawSmallCube(double x, double y, double z, const TexturedModel &texturedModel, float scale, glm::mat4 view) {
+        // SetColor(1.0, 0.86, 0.67);        // Skin color
+        SetTranslation(x, y, z);
+        SetScale(scale);
+        model = glm::inverse(view) * model;
+        SendTransformations();
+        texturedModel.model.draw();
         ResetModel();
     }
 

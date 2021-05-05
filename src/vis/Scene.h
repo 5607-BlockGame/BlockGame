@@ -29,12 +29,14 @@ private:
     glm::mat4 model;
     Model &blockModel;
     CrossHair &crossHair;
+    BlockLocation selectedBlock;
 
 public:
 
     Scene(World &world, unsigned int shaderProgram, unsigned int shader2DProgram, Model &blockModel, CrossHair &crossHair) : world(world), shaderProgram(shaderProgram),
                                                                                                                              shader2DProgram(shader2DProgram), blockModel(blockModel),
-                                                                                                                             crossHair(crossHair) {
+                                                                                                                             crossHair(crossHair),
+                                                                                                                             selectedBlock(BlockLocation(0,0,0)) {
         modelParam = glGetUniformLocation(shaderProgram, "model");
         textureIdParam = glGetUniformLocation(shaderProgram, "texID");
         colorParam = glGetUniformLocation(shaderProgram, "inColor");
@@ -79,6 +81,19 @@ public:
         return !block.IsPassthrough();
     }
 
+    void selectBlock(BlockLocation location) {
+        ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
+        Chunk *chunk = world.GetChunk(chunkCoord);
+
+        Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
+
+        if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
+        if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
+//        chunk->SetBlock(blockLocation, Block());
+
+        selectedBlock = blockLocation;
+    }
+
 
     void Draw(PlayerLoc playerLoc) {
         ChunkCoord baseChunkCoord = Chunk::Location(playerLoc);
@@ -109,7 +124,16 @@ public:
                         double actualY = chunkStartY + blockY;
                         auto actualZ = (double) topBlock.z;
 
-                        Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
+                        BlockLocation loc(0,0,0);
+                        GetBlockLocation(glm::vec3(actualX, actualY, actualZ), &loc);
+                        if (selectedBlock == loc) {  // draw wireframe around selected block
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
+                            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0, 1, 0, 1.03);
+                            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+                        } else {
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
+                        }
                     }
                 }
             }
@@ -146,7 +170,7 @@ private:
     void Draw(float x, float y, float z, const Model &model, float r, float g, float b, float scale = 1.0) {
         SetColor(r, g, b);
         SetTranslation(x, y, z);
-//        SetScale(scale);
+        SetScale(scale);
         SendTransformations();
         model.draw();
         ResetModel();

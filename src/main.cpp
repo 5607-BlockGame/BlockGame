@@ -40,6 +40,23 @@ const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;
 
+
+// should return location of closest non-air block
+BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir) {
+    glm::vec3 rayStart = state.camPosition;
+    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
+
+    BlockLocation blockLocation(0,0,0);
+    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
+        glm::vec3 pos = rayStart + dir * i;
+        bool hit = scene.GetBlockLocation(pos, &blockLocation);
+        if (hit) {
+            return blockLocation;
+        }
+    }
+    return blockLocation;
+}
+
 void handleMouseMove(State &state, const SDL_MouseMotionEvent &event, SDL_Window *window) {
     state.angle += MOUSE_SENSITIVITY * (float) event.xrel;
     state.angle2 += MOUSE_SENSITIVITY * (float) event.yrel;
@@ -112,23 +129,23 @@ void handleKeyHold(State &state, int code) {
 }
 
 void handleMousePressed(Scene &scene, World &world, State& state, Vec3 lookDir, glm::mat4 view) {
-    glm::vec3 rayStart = state.camPosition;
-    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
-
-    // scene.DrawSmallCube(rayStart + dir * 5.0f);
-
-    BlockLocation blockLocation(0,0,0);
-    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
-        glm::vec3 pos = rayStart + dir * i;
-        bool hit = scene.GetBlockLocation(pos, &blockLocation);
-        if (hit) {
-            Block block = world.getBlockAt(blockLocation);
-            world.breakBlock(blockLocation);
-            break;
-        }
-    }
+//    glm::vec3 rayStart = state.camPosition;
+//    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
+//
+//    // scene.DrawSmallCube(rayStart + dir * 5.0f);
+//
+//    BlockLocation blockLocation(0,0,0);
+//    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
+//        glm::vec3 pos = rayStart + dir * i;
+//        bool hit = scene.GetBlockLocation(pos, &blockLocation);
+//        if (hit) {
+//            Block block = world.getBlockAt(blockLocation);
+//            world.breakBlock(blockLocation);
+//            break;
+//        }
+//    }
+    world.breakBlock(raycast(scene, world, state, lookDir));
 }
-
 
 bool fullscreen = true;
 //int screen_width = 1000;
@@ -316,7 +333,8 @@ int main(int argc, char *argv[]) {
             }
         }
 
-
+        // select block
+        scene.selectBlock(raycast(scene, world, state, lookDir));
 
         //////////////
  

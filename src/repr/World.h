@@ -60,7 +60,6 @@ public:
 
         if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
         if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
-        std::cout << blockLocation.x << "," << blockLocation.y << "," << blockLocation.z << std::endl;
         chunk->SetBlock(blockLocation, Block());
     }
 

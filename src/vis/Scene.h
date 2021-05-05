@@ -107,7 +107,7 @@ public:
 
                         double actualX = chunkStartX + blockX;
                         double actualY = chunkStartY + blockY;
-                        auto actualZ = (double) topBlock.z - 1.0;
+                        auto actualZ = (double) topBlock.z;
 
                         Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
                     }

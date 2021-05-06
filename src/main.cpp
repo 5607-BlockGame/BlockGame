@@ -51,6 +51,7 @@ BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir) {
         glm::vec3 pos = rayStart + dir * i;
         bool hit = scene.GetBlockLocation(pos, &blockLocation);
         if (hit) {
+            scene.selectBlock(blockLocation);
             return blockLocation;
         }
     }
@@ -144,7 +145,13 @@ void handleMousePressed(Scene &scene, World &world, State& state, Vec3 lookDir, 
 //            break;
 //        }
 //    }
-    world.breakBlock(raycast(scene, world, state, lookDir));
+    if (state.count < 10) {
+        raycast(scene, world, state, lookDir);
+        state.count++;
+    } else {
+        world.breakBlock(raycast(scene, world, state, lookDir));
+        state.count = 0;
+    }
 }
 
 bool fullscreen = true;
@@ -297,6 +304,7 @@ int main(int argc, char *argv[]) {
                     break;
                 case SDL_MOUSEBUTTONUP:
                     state.isMining = false;
+                    state.count = 0;
                     break;
             }
 
@@ -334,7 +342,7 @@ int main(int argc, char *argv[]) {
         }
 
         // select block
-        scene.selectBlock(raycast(scene, world, state, lookDir));
+        // scene.selectBlock(raycast(scene, world, state, lookDir));
 
         //////////////
  

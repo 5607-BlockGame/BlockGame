@@ -36,6 +36,7 @@ struct State {
     float angle2;
     Movement movement;
     bool isMining = false;
+    int count = 0;
     float handRotation = -20.0 * M_PI/180.0;
 
     [[nodiscard]] inline bool isRunning() const{

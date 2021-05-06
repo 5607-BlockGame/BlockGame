@@ -82,16 +82,16 @@ public:
     }
 
     void selectBlock(BlockLocation location) {
-        ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
-        Chunk *chunk = world.GetChunk(chunkCoord);
+        // ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
+        // Chunk *chunk = world.GetChunk(chunkCoord);
 
-        Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
+        // Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
 
-        if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
-        if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
+        // if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
+        // if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
 //        chunk->SetBlock(blockLocation, Block());
 
-        selectedBlock = blockLocation;
+        selectedBlock = location;
     }
 
 
@@ -124,8 +124,8 @@ public:
                         double actualY = chunkStartY + blockY;
                         auto actualZ = (double) topBlock.z;
 
-                        BlockLocation loc(0,0,0);
-                        GetBlockLocation(glm::vec3(actualX, actualY, actualZ), &loc);
+                        BlockLocation loc(actualX,actualY,actualZ);
+                        // GetBlockLocation(glm::vec3(actualX, actualY, actualZ), &loc);
                         if (selectedBlock == loc) {  // draw wireframe around selected block
                             Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
                             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );

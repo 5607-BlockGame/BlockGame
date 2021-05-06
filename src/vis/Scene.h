@@ -116,14 +116,14 @@ public:
                         auto actualZ = (double) topBlock.z;
 
                         BlockLocation loc(actualX,actualY,actualZ);
-
+                        float r = actualZ / (CHUNK_HEIGHT/5);  // originally 0.7
                         if (selectedBlock == loc) {  // draw wireframe around selected block
-                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, r, 0.2, 0.3);
                             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
                             Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0, 1, 0, 1.03);
                             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
                         } else {
-                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, r, 0.2, 0.3);
                         }
                     }
                 }

@@ -130,21 +130,6 @@ void handleKeyHold(State &state, int code) {
 }
 
 void handleMousePressed(Scene &scene, World &world, State& state, Vec3 lookDir, glm::mat4 view) {
-//    glm::vec3 rayStart = state.camPosition;
-//    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
-//
-//    // scene.DrawSmallCube(rayStart + dir * 5.0f);
-//
-//    BlockLocation blockLocation(0,0,0);
-//    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
-//        glm::vec3 pos = rayStart + dir * i;
-//        bool hit = scene.GetBlockLocation(pos, &blockLocation);
-//        if (hit) {
-//            Block block = world.getBlockAt(blockLocation);
-//            world.breakBlock(blockLocation);
-//            break;
-//        }
-//    }
     if (state.count < 10) {
         raycast(scene, world, state, lookDir);
         state.count++;
@@ -184,7 +169,7 @@ int main(int argc, char *argv[]) {
     SDL_GLContext context = SDL_GL_CreateContext(window);
 
     Utils::loadGlad();
-//
+
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
 
@@ -341,13 +326,6 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // select block
-        // scene.selectBlock(raycast(scene, world, state, lookDir));
-
-        //////////////
- 
-        /////////////
-
         // Clear the screen to default color
         glClearColor(.2f, 0.4f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -387,6 +365,7 @@ int main(int argc, char *argv[]) {
 
         scene.Draw(state.camPosition);
         scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
+
         // Animate hand if mining block
         if (state.isMining) {
             handleMousePressed(scene, world, state, lookDir, view);

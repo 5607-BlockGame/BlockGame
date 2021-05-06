@@ -82,15 +82,6 @@ public:
     }
 
     void selectBlock(BlockLocation location) {
-        // ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
-        // Chunk *chunk = world.GetChunk(chunkCoord);
-
-        // Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
-
-        // if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
-        // if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
-//        chunk->SetBlock(blockLocation, Block());
-
         selectedBlock = location;
     }
 
@@ -125,7 +116,7 @@ public:
                         auto actualZ = (double) topBlock.z;
 
                         BlockLocation loc(actualX,actualY,actualZ);
-                        // GetBlockLocation(glm::vec3(actualX, actualY, actualZ), &loc);
+
                         if (selectedBlock == loc) {  // draw wireframe around selected block
                             Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
                             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -156,17 +147,9 @@ public:
         DrawCrossHair(x, y, scaleX, scaleY);
     }
 
-    void DrawSmallCube(glm::vec3 pos) {
-        // glm::vec3 pos = rayStart + dir * dist;
-        // std::cout << pos.x << "," << pos.y << "," << pos.z << std::endl;
-        TexturedModel textModel(blockModel, 0);
-        Draw((double)pos.x, (double)pos.y, (double)pos.z, textModel, .1);
-    }
-
-
 private:
 
-//
+
     void Draw(float x, float y, float z, const Model &model, float r, float g, float b, float scale = 1.0) {
         SetColor(r, g, b);
         SetTranslation(x, y, z);
@@ -184,16 +167,6 @@ private:
         model = glm::inverse(view) * model;
         SendTransformations();
         blockModel.draw();
-        ResetModel();
-    }
-
-    void DrawSmallCube(double x, double y, double z, const TexturedModel &texturedModel, float scale, glm::mat4 view) {
-        // SetColor(1.0, 0.86, 0.67);        // Skin color
-        SetTranslation(x, y, z);
-        SetScale(scale);
-        model = glm::inverse(view) * model;
-        SendTransformations();
-        texturedModel.model.draw();
         ResetModel();
     }
 

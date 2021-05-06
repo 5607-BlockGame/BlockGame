@@ -90,9 +90,13 @@ void handleKeyPress(State &state, int code) {
         case SDLK_s:
             state.movement.forwardStrafe = 0;
             break;
+        case SDLK_g:
+            state.gravity = !state.gravity;
         case SDLK_SPACE:
         case SDLK_LSHIFT:
-            state.movement.velocityZ = 0;
+            if (state.gravity) state.movement.velocityZ = -1;
+            else state.movement.velocityZ = 0;
+            break;
         default:
             break;
     }
@@ -317,10 +321,12 @@ int main(int argc, char *argv[]) {
 
         auto oldPosition = state.camPosition;
         Vec3 extraPosition = state.camPosition + dirExtra;
+        Vec3 lateralPosition = state.camPosition + Vec3(dirExtra.x, dirExtra.y, 0);
 
         if (moveDir.hasMagnitude()) {
             if (scene.IsCollision(extraPosition)) {
-                state.camPosition = oldPosition;
+                if (!scene.IsCollision(lateralPosition)) state.camPosition += Vec3(moveDir.x, moveDir.y, 0);
+                else state.camPosition = oldPosition;
             } else{
                 state.camPosition += moveDir;
             }

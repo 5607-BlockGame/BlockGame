@@ -27,7 +27,7 @@ using namespace std;
 
 
 const float FOV_Y = 3.14f / 4;
-const float STRAFE_SPEED = 3.0f;
+const float STRAFE_SPEED = 1.0f;
 const float ZNEAR = 1.0;
 const float ZFAR = 100.0;
 const float EXTRA_FACTOR = 3.0f;
@@ -35,7 +35,7 @@ const float KEY_DIST = 0.5f;
 const float KEY_HEIGHT = -0.1f;
 
 const float JUMP_VEL = 0.07;
-const float FLY_VEL = 2.0;
+const float FLY_VEL = 1.0;
 const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;
@@ -47,7 +47,7 @@ BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir) {
     glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
 
     BlockLocation blockLocation(0,0,0);
-    for (float i = 0.0f; i <= 5.0f; i += 0.5f) {
+    for (float i = 0.0f; i <= 8.0f; i += 0.5f) {
         glm::vec3 pos = rayStart + dir * i;
         bool hit = scene.GetBlockLocation(pos, &blockLocation);
         if (hit) {

@@ -29,12 +29,14 @@ private:
     glm::mat4 model;
     Model &blockModel;
     CrossHair &crossHair;
+    BlockLocation selectedBlock;
 
 public:
 
     Scene(World &world, unsigned int shaderProgram, unsigned int shader2DProgram, Model &blockModel, CrossHair &crossHair) : world(world), shaderProgram(shaderProgram),
                                                                                                                              shader2DProgram(shader2DProgram), blockModel(blockModel),
-                                                                                                                             crossHair(crossHair) {
+                                                                                                                             crossHair(crossHair),
+                                                                                                                             selectedBlock(BlockLocation(0,0,0)) {
         modelParam = glGetUniformLocation(shaderProgram, "model");
         textureIdParam = glGetUniformLocation(shaderProgram, "texID");
         colorParam = glGetUniformLocation(shaderProgram, "inColor");
@@ -67,6 +69,22 @@ public:
 
     }
 
+    bool GetBlockLocation(glm::vec3 loc, BlockLocation *blockLocation) {
+        long iX = (long) std::round(loc.x);
+        long iY = (long) std::round(loc.y);
+        long iZ = (long) std::round(loc.z);
+
+        *blockLocation = BlockLocation(iX, iY, iZ);
+        if (iZ < 0 || iZ >= CHUNK_HEIGHT) return false;
+
+        Block block = world.getBlockAt(*blockLocation);
+        return !block.IsPassthrough();
+    }
+
+    void selectBlock(BlockLocation location) {
+        selectedBlock = location;
+    }
+
 
     void Draw(PlayerLoc playerLoc) {
         ChunkCoord baseChunkCoord = Chunk::Location(playerLoc);
@@ -95,10 +113,18 @@ public:
 
                         double actualX = chunkStartX + blockX;
                         double actualY = chunkStartY + blockY;
-                        auto actualZ = (double) topBlock.z - 1.0;
+                        auto actualZ = (double) topBlock.z;
 
-                        Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0.7, 0.2, 0.3);
-
+                        BlockLocation loc(actualX,actualY,actualZ);
+                        float r = actualZ / (CHUNK_HEIGHT/5);  // originally 0.7
+                        if (selectedBlock == loc) {  // draw wireframe around selected block
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, r, 0.2, 0.3);
+                            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, 0, 1, 0, 1.03);
+                            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+                        } else {
+                            Draw((float) actualX, (float) actualY, (float) actualZ, blockModel, r, 0.2, 0.3);
+                        }
                     }
                 }
             }
@@ -111,7 +137,7 @@ public:
         glm::vec3 right = glm::normalize(glm::cross(up, forward));
         double handX = 0.05f;
         double handY = -0.01f;
-        double handZ = -0.05f;
+        double handZ = -1.0f;
         DrawHand(handX, handY, handZ, rotation, view);
     }
 
@@ -121,14 +147,13 @@ public:
         DrawCrossHair(x, y, scaleX, scaleY);
     }
 
-
 private:
 
-//
+
     void Draw(float x, float y, float z, const Model &model, float r, float g, float b, float scale = 1.0) {
         SetColor(r, g, b);
         SetTranslation(x, y, z);
-//        SetScale(scale);
+        SetScale(scale);
         SendTransformations();
         model.draw();
         ResetModel();
@@ -138,7 +163,7 @@ private:
         SetColor(1.0, 0.86, 0.67);        // Skin color
         SetTranslation(x, y, z);
         SetRotationX(rotation);
-        SetScale(0.02, 0.02, 0.3);
+        SetScale(0.02, 0.02, 0.2);
         model = glm::inverse(view) * model;
         SendTransformations();
         blockModel.draw();

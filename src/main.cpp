@@ -27,7 +27,7 @@ using namespace std;
 
 
 const float FOV_Y = 3.14f / 4;
-const float STRAFE_SPEED = 3.0f;
+const float STRAFE_SPEED = 1.0f;
 const float ZNEAR = 1.0;
 const float ZFAR = 100.0;
 const float EXTRA_FACTOR = 3.0f;
@@ -35,10 +35,28 @@ const float KEY_DIST = 0.5f;
 const float KEY_HEIGHT = -0.1f;
 
 const float JUMP_VEL = 0.07;
-const float FLY_VEL = 2.0;
+const float FLY_VEL = 1.0;
 const float ACC_G = 0.2f;
 
 const float MOUSE_SENSITIVITY = 0.001;
+
+
+// should return location of closest non-air block
+BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir) {
+    glm::vec3 rayStart = state.camPosition;
+    glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
+
+    BlockLocation blockLocation(0,0,0);
+    for (float i = 0.0f; i <= 8.0f; i += 0.5f) {
+        glm::vec3 pos = rayStart + dir * i;
+        bool hit = scene.GetBlockLocation(pos, &blockLocation);
+        if (hit) {
+            scene.selectBlock(blockLocation);
+            return blockLocation;
+        }
+    }
+    return blockLocation;
+}
 
 void handleMouseMove(State &state, const SDL_MouseMotionEvent &event, SDL_Window *window) {
     state.angle += MOUSE_SENSITIVITY * (float) event.xrel;
@@ -111,6 +129,16 @@ void handleKeyHold(State &state, int code) {
     }
 }
 
+void handleMousePressed(Scene &scene, World &world, State& state, Vec3 lookDir, glm::mat4 view) {
+    if (state.count < 10) {
+        raycast(scene, world, state, lookDir);
+        state.count++;
+    } else {
+        world.breakBlock(raycast(scene, world, state, lookDir));
+        state.count = 0;
+    }
+}
+
 bool fullscreen = true;
 //int screen_width = 1000;
 //int screen_height = 600;
@@ -141,7 +169,7 @@ int main(int argc, char *argv[]) {
     SDL_GLContext context = SDL_GL_CreateContext(window);
 
     Utils::loadGlad();
-//
+
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
 
@@ -261,6 +289,7 @@ int main(int argc, char *argv[]) {
                     break;
                 case SDL_MOUSEBUTTONUP:
                     state.isMining = false;
+                    state.count = 0;
                     break;
             }
 
@@ -295,14 +324,6 @@ int main(int argc, char *argv[]) {
             } else{
                 state.camPosition += moveDir;
             }
-        }
-
-        // Animate hand if mining block
-        if (state.isMining) {
-            if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
-            else state.handRotation -= 3.0 * M_PI / 180.0;
-        } else {
-            state.handRotation = -20.0 * M_PI / 180.0;
         }
 
         // Clear the screen to default color
@@ -344,6 +365,15 @@ int main(int argc, char *argv[]) {
 
         scene.Draw(state.camPosition);
         scene.DrawPlayer(state.camPosition, lookDir, state.handRotation, view);
+
+        // Animate hand if mining block
+        if (state.isMining) {
+            handleMousePressed(scene, world, state, lookDir, view);
+            if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
+            else state.handRotation -= 8.0 * M_PI / 180.0;
+        } else {
+            state.handRotation = -20.0 * M_PI / 180.0;
+        }
 
         // Switch to 2D to render crosshair
         glUseProgram(textured2dShader); //Set the active shader

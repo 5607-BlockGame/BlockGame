@@ -37,6 +37,7 @@ struct State {
     Movement movement;
     bool gravity = true;
     bool isMining = false;
+    bool place = false;
     int count = 0;
     float handRotation = -20.0 * M_PI/180.0;
 

@@ -63,6 +63,18 @@ public:
         chunk->SetBlock(blockLocation, Block());
     }
 
+    // place a block when the p key is pressed
+    void placeBlock(BlockLocation location) {
+        ChunkCoord chunkCoord((int) location.x >> 4, (int) location.y >> 4);
+        Chunk *chunk = GetChunk(chunkCoord);
+
+        Vec3D<long> blockLocation(location.x % 16, location.y % 16, location.z);
+
+        if (blockLocation.x < 0) blockLocation.x = 16 + blockLocation.x;
+        if (blockLocation.y < 0) blockLocation.y = 16 + blockLocation.y;
+        chunk->SetBlock(blockLocation, Block(BlockType::STONE));
+    }
+
 
 private:
     Chunk *GetChunkInMemory(ChunkCoord coord) {

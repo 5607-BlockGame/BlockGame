@@ -146,7 +146,7 @@ public:
         glm::vec3 right = glm::normalize(glm::cross(up, forward));
         double handX = 0.05f;
         double handY = -0.01f;
-        double handZ = -0.05f;
+        double handZ = -1.0f;
         DrawHand(handX, handY, handZ, rotation, view);
     }
 
@@ -180,7 +180,7 @@ private:
         SetColor(1.0, 0.86, 0.67);        // Skin color
         SetTranslation(x, y, z);
         SetRotationX(rotation);
-        SetScale(0.02, 0.02, 0.3);
+        SetScale(0.02, 0.02, 0.2);
         model = glm::inverse(view) * model;
         SendTransformations();
         blockModel.draw();

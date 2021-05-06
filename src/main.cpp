@@ -391,7 +391,7 @@ int main(int argc, char *argv[]) {
         if (state.isMining) {
             handleMousePressed(scene, world, state, lookDir, view);
             if (state.handRotation <= -20.0 * M_PI / 180.0) state.handRotation = 20.0 * M_PI / 180.0;
-            else state.handRotation -= 3.0 * M_PI / 180.0;
+            else state.handRotation -= 8.0 * M_PI / 180.0;
         } else {
             state.handRotation = -20.0 * M_PI / 180.0;
         }

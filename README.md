@@ -26,37 +26,17 @@ src/main            really messy right now should probably be separated into mul
 ![Content Root](.github/content-root.png)
 
 
-# Progress Report
+# Final Write-Up
 
 ## Team
 - Andrew Gazelka
 - Quynh Do
 - Allison Miller
 
-## Description
-We plan to build a minimalistic block game inspired by Minecraft. We use OpenGL and C++ (20).
-The goals we plan to accompish are as follows
+## Project Description & Overview
 
-- [ ] Terrain generation
-  - [x] Minimal flat terrain generation
-  - [ ] Hills
-  - [ ] Trees and other structures
-  - [ ] Caves (if we get time)
-- [x] Saving worlds
-- [x] Loading worlds
-- [x] Displaying blocks
-- [x] Hand animation
-- [ ] Simple Physics (jumping)
-- [ ] Flying (activate and de-activate)
-- [x] Collision
-- [x] Cross hair
-- [ ] Block selection indicator
-- [ ] Building
-- [ ] Break blocks
-
-## Progress Plan
-The milestones are mostly listed in the description. However, it is important to list _when_
-we want to get everything done. By May 1st our plan is to have everything look like this
+Our final project is a real-time minimalistic block game inspired by Minecraft. We use OpenGL and C++ (20).
+The goals we aimed to accomplish and what we were able to achieve are as follows
 
 - [ ] Terrain generation
   - [x] Minimal flat terrain generation
@@ -71,37 +51,48 @@ we want to get everything done. By May 1st our plan is to have everything look l
 - [x] Flying (activate and de-activate)
 - [x] Collision
 - [x] Cross hair
-- [ ] Block selection indicator
-- [ ] Building
+- [x] Block selection indicator
+- [x] Building
 - [x] Break blocks
 
-### Concerns
-One concern is that Andrew has a job interview around when this is due, so he will need to 
-make sure to do work beforehand. Another concern is displaying 2D-related objects, such 
-as a menu of blocks or the selection indicator over a block. This seems simple, but we 
-still have to learn how to do it as most of the class we have learned 3D graphics.
+### Main obstacles
 
-### Progress
-This is described in the description section
+The number of blocks we generated for the game is pretty large, so Andrew had to optimize the rendering so that the game is runnable. Quynh and Allison were also not very familiar with the code base that Andrew set up, so it took them a while to understand it well enough to implement the breaking and building blocks features. Converting between 2D and 3D perspective was another obstacle that we encountered since we mostly learned about 3D graphics in our class.
 
-### Difficulties and Resolution
-A big difficulty has been debugging. Andrew did a lot of work at once to setup this
-project, and it took him a bit of time to figure out how to display simple blocks correctly. 
-Although computer graphics usually has the z dimension pointing up and down, Minecraft 
-has the z direction pointing up and down. Even though Andrew knew this, he was thinking
-in Minecraft-world and had a bunch of code using z where it should have been z. A good
-way to avoid this is to have frequent debugging.
+## Connection to our class
+
+Our project is an extension of what we learned in Project 4, which involves real-time 3D game programming in OpenGL. Our game demonstrates the rendering pipeline. We have simple animation of an object hitting the blocks. Moreover, we use both perspective and orthographic projection in the game. The perspective projection is for rendering the 3D scene, and the orthographic projection is for rendering the cross-hair on the 2D screen. We implement a dynamic environment where the player can interact with the blocks by breaking or building a new one. User interface includes mouse and keyboard control, jumping, block selection indicator, and simple Imgui integration. Lighting and Shading are done using the provided shader codes from project 4.
+
+## Key features and Images
+
+### Movement
+Player can control camera rotation using mouse and camera movement using keyboard.
+
+Keys map:
+
+- A/D - move left/right
+- W/S - move forward/backward
+- G - enable/disable gravity (toggle flying mode)
+- Space - Jump (not flying mode) / Move up (flying mode)
+- Left shift - Move down (flying mode)
+
+#### Jumping
+![Jumping](https://media.giphy.com/media/ynfcaq0GS4gNgkB2zo/giphy.gif)
+
+#### Flying
+![Flying](https://media.giphy.com/media/f4s6bkmBlsJXvfGz2e/giphy.gif)
 
 
-## Image of Progress
+### Breaking blocks
+- Press and hold the mouse to break the blocks. The player can break the blocks near them.
 
-### Hitting Animation
+![Breaking blocks](https://media.giphy.com/media/phcRtsXEi5xnQYLlFT/giphy.gif)
 
-![Hitting animation](.github/hand_animation.gif)
+### Building blocks
+- Move the cross hair to the targeted position and press P to place a block.
 
-### Infinitely* generated world
-Right now this is just flat, but it _does_ go on "forever."
-![Infinite world](.github/infinite-world.png)
+![Building](https://media.giphy.com/media/CX0RURzsdP9TAzwqyV/giphy.gif)
 
-* = not immune to overflowing longs.
+## Future work
 
+Since this is a 3D game, there are many rooms to improve in the future. We could complete the terrain generation process to include trees, caves, and other structures. We should optimize our terrain enough so that we could add block textures for better visualization. We can also introduce a wider range of block types to display different materials. User interaction could also be improved to be smoother and more accurate.

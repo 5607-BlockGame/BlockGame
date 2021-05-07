@@ -1,4 +1,7 @@
 #include "glad.h"  //Include order can matter here
+#include "imgui.h"
+#include "backends/imgui_impl_sdl.h"
+#include "backends/imgui_impl_opengl3.h"
 #include <SDL.h>
 #include <cstdio>
 #include <generator/SimpleGenerator.h>
@@ -174,6 +177,19 @@ int main(int argc, char *argv[]) {
 
     Utils::loadGlad();
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForOpenGL(window, context);
+    const char* glsl_version = "#version 150";
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,16);
 
@@ -273,6 +289,20 @@ int main(int argc, char *argv[]) {
 
         unsigned int millisPast = t_start - t_prev;
         float secondsPast = millisPast / 1000.F;
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(window);
+        ImGui::NewFrame();
+
+        // State
+        bool show_another_window = true;
+        ImGui::Begin("Block Game", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        if (ImGui::Button("Close Me"))
+            show_another_window = false;
+        ImGui::End();
+
 
         while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {
@@ -401,6 +431,8 @@ int main(int argc, char *argv[]) {
         glBindTexture(GL_TEXTURE_2D, crossHairTexture);
 
         scene.DrawCrossHair(screen_width/2, screen_height/2);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         SDL_GL_SwapWindow(window); //Double buffering
 
@@ -416,6 +448,9 @@ int main(int argc, char *argv[]) {
 
 
     //Clean Up
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     glDeleteProgram(texturedShader);
     glDeleteProgram(textured2dShader);
     glDeleteBuffers(1, vbo);

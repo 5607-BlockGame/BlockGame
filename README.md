@@ -65,6 +65,15 @@ Our project is an extension of what we learned in Project 4, which involves real
 
 ## Key features and Images
 
+### Terrain Generation
+Terrain is generated using [Open Simplex Noise](https://github.com/SRombauts/SimplexNoise). Each chunk (16x16x256) area
+is generated independently of other chunks. If a chunk has not been saved to disk, it is generated. If it has been 
+generated and is in memory, it is loaded from memory. If it is on disk, it is loaded from disk.
+
+### Optimizations
+Only the top-most blocks of the world are rendered. This could be improved to only render polygons that can be shown
+(we are still rendering the back of blocks), but we have not reached that point yet.
+
 ### Movement
 Player can control camera rotation using mouse and camera movement using keyboard.
 

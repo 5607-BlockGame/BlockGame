@@ -42,15 +42,20 @@ const float MOUSE_SENSITIVITY = 0.001;
 
 
 // should return location of closest non-air block
-BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir) {
+BlockLocation raycast(Scene &scene, World &world, State& state, Vec3 lookDir, bool place = false) {
     glm::vec3 rayStart = state.camPosition;
     glm::vec3 dir = glm::vec3(lookDir.x, lookDir.y, lookDir.z);
 
+    BlockLocation prev(0,0,0);
     BlockLocation blockLocation(0,0,0);
     for (float i = 0.0f; i <= 8.0f; i += 0.5f) {
         glm::vec3 pos = rayStart + dir * i;
+        prev = blockLocation;
         bool hit = scene.GetBlockLocation(pos, &blockLocation);
         if (hit) {
+            if (place) {
+                blockLocation = prev;
+            }
             scene.selectBlock(blockLocation);
             return blockLocation;
         }
@@ -97,6 +102,8 @@ void handleKeyPress(State &state, int code) {
             if (state.gravity) state.movement.velocityZ = -1;
             else state.movement.velocityZ = 0;
             break;
+        case SDLK_p:
+            state.place = true;
         default:
             break;
     }
@@ -147,13 +154,11 @@ bool fullscreen = true;
 //int screen_width = 1000;
 //int screen_height = 600;
 
-char window_title[] = "My OpenGL Program";
+char window_title[] = "Minecraft";
 
 float avg_render_time = 0;
 
 int main(int argc, char *argv[]) {
-
-
     Utils::SDLInit();
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -379,6 +384,12 @@ int main(int argc, char *argv[]) {
             else state.handRotation -= 8.0 * M_PI / 180.0;
         } else {
             state.handRotation = -20.0 * M_PI / 180.0;
+        }
+
+        // place block
+        if (state.place) {
+            world.placeBlock(raycast(scene, world, state, lookDir, true));
+            state.place = false;
         }
 
         // Switch to 2D to render crosshair

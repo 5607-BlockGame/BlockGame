@@ -57,11 +57,11 @@ The goals we aimed to accomplish and what we were able to achieve are as follows
 
 ### Main obstacles
 
-The number of blocks we generated for the game is pretty large, so Andrew had to optimize the rendering so that the game is runnable. Quynh and Allison were also not very familiar with the code base that Andrew set up, so it took them a while to understand it well enough to implement the breaking and building blocks features. Converting between 2D and 3D perspective was another obstacle that we encountered since we mostly learned about 3D graphics in our class.
+The main technical obstacle was the large number of blocks generated for the game; Andrew had to optimize the rendering so that the game could run smoothly, which necessitated removing the textures for the blocks and using a placeholder color instead. Quynh and Allison were also not familiar with the code base that Andrew set up, so it took them a while to understand it well enough to implement the breaking and building blocks features. Converting between 2D and 3D perspective was another obstacle that we encountered since we mostly learned about 3D graphics in our class. Allison also had issues initially setting up CMake to work with the project and had to switch to a new IDE partway through the project to avoid having to set up a new project every time new code was committed.
 
 ## Connection to our class
 
-Our project is an extension of what we learned in Project 4, which involves real-time 3D game programming in OpenGL. Our game demonstrates the rendering pipeline. We have simple animation of an object hitting the blocks. Moreover, we use both perspective and orthographic projection in the game. The perspective projection is for rendering the 3D scene, and the orthographic projection is for rendering the cross-hair on the 2D screen. We implement a dynamic environment where the player can interact with the blocks by breaking or building a new one. User interface includes mouse and keyboard control, jumping, block selection indicator, and simple Imgui integration. Lighting and Shading are done using the provided shader codes from project 4.
+Our project is an extension of what we learned in Project 4, which involves real-time 3D game programming in OpenGL. Our game demonstrates the rendering pipeline. We have simple animation of an object hitting the blocks. Moreover, we use both perspective and orthographic projection in the game. The perspective projection is for rendering the 3D scene, and the orthographic projection is for rendering the cross-hair on the 2D screen. We implement a dynamic environment where the player can interact with the blocks by breaking or building a new one. User interface includes mouse and keyboard control, jumping, block selection indicator, and simple Imgui integration. Lighting and Shading are done using the provided shader code from project 4.
 
 ## Key features and Images
 
@@ -93,7 +93,7 @@ Keys map:
 
 
 ### Breaking blocks
-- Press and hold the mouse to break the blocks. The player can break the blocks near them.
+- Press and hold the mouse to break the blocks. The player can only break blocks near them within a set radius. A green selection indicator will appear when you begin breaking a block if that block is within range.
 
 ![Breaking blocks](https://media.giphy.com/media/phcRtsXEi5xnQYLlFT/giphy.gif)
 
@@ -104,4 +104,4 @@ Keys map:
 
 ## Future work
 
-Since this is a 3D game, there are many rooms to improve in the future. We could complete the terrain generation process to include trees, caves, and other structures. We should optimize our terrain enough so that we could add block textures for better visualization. We can also introduce a wider range of block types to display different materials. User interaction could also be improved to be smoother and more accurate.
+Since this is a 3D game, there is much room to improve in the future. We could complete the terrain generation process to include trees, caves, and other structures. We should optimize our terrain enough so that we could add block textures for better visualization. Since the game is based on ideas from Minecraft, incorporating textures would allow us to show the progress of a block being broken by using textures that look more and more broken. Including particle effects during the block breaking process would help with the realism of the animation. We could also introduce a wider range of block types to display different materials with different interactions and effects on the environment, like water or lava in addition to the standard solid types such as dirt or stone.  User interaction could also be improved to be smoother and more accurate.
